@@ -7,8 +7,9 @@ import java.util.Optional;
 
 public interface RolService {
 
-    Rol saveRol(Rol rol);
-    List<Rol> getAllRoles();
-    Optional<Rol> getRolById(int id);
-    void deleteRol(int id);
+    List<Rol> obtenerTodosLosRoles();
+    Rol obtenerRolPorId(Long id);
+    Rol crearRol(Rol rol);
+    Rol actualizarRol(Long id, Rol rol);
+    void eliminarRol(Long id);
 }

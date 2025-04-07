@@ -7,9 +7,13 @@ import java.util.Optional;
 
 public interface CuentaBancariaService {
 
-    CuentaBancaria saveCuenta(CuentaBancaria cuenta);
-    List<CuentaBancaria> getAllCuentas();
-    Optional<CuentaBancaria> getCuentaById(int id);
-    void deleteCuenta(int id);
+    List<CuentaBancaria> obtenerTodasLasCuentaBancarias();
 
+    CuentaBancaria obtenerCuentaBancariaPorId(Long id);
+
+    CuentaBancaria crearCuentaBancaria(CuentaBancaria cuentaBancaria);
+
+    CuentaBancaria actualizarCuentaBancaria(Long id, CuentaBancaria cuentaBancaria);
+
+    void eliminarCuentaBancaria(Long id);
 }
