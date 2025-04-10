@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.service;
 
+import com.miprimerspring.nuestroecosistema.DTO.CategoriaDTO;
 import com.miprimerspring.nuestroecosistema.model.Categoria;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface CategoriaService {
     Categoria actualizarCategoria(Long id, Categoria categoria);
 
     void eliminarCategoria(Long id);
+
+    CategoriaDTO convertirACategoriaDTO(Categoria categoria); //Metodo para convertir la entidad a DTO
 }

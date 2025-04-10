@@ -16,32 +16,32 @@ public class Rol {
     public Rol() {
     }
 
-    public Rol(long rol_id, String rol_nombre) {
-        this.rolId = rol_id;
-        this.rolNombre = rol_nombre;
+    public Rol(long rolId, String rolNombre) {
+        this.rolId = rolId;
+        this.rolNombre = rolNombre;
     }
 
-    public long getRol_id() {
+    public long getRolId() {
         return rolId;
     }
 
-    public void setRol_id(long rol_id) {
-        this.rolId = rol_id;
+    public void setRolId(long rolId) {
+        this.rolId = rolId;
     }
 
-    public String getRol_nombre() {
-        return rolNombre;
+    public String getRolNombre() {
+        return rolNombre;  // Asegúrate de tener este método
     }
 
-    public void setRol_nombre(String rol_nombre) {
-        this.rolNombre = rol_nombre;
+    public void setRolNombre(String rolNombre) {
+        this.rolNombre = rolNombre;
     }
 
     @Override
     public String toString() {
         return "Rol{" +
-                "rol_id=" + rolId +
-                ", rol_nombre='" + rolNombre + '\'' +
+                "rolId=" + rolId +
+                ", rolNombre='" + rolNombre + '\'' +
                 '}';
     }
 }

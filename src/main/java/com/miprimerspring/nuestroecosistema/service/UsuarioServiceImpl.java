@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.service;
 
+import com.miprimerspring.nuestroecosistema.DTO.UsuarioDTO;
 import com.miprimerspring.nuestroecosistema.model.Usuario;
 import com.miprimerspring.nuestroecosistema.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -21,26 +23,31 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<Usuario> obtenerTodosLosUsuarios() {
-        return usuarioRepository.findAll();
+    public List<UsuarioDTO> obtenerTodosLosUsuarios() {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        return usuarios.stream()
+                .map(UsuarioDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Usuario obtenerUsuarioPorId(Long id) {
+    public Optional<UsuarioDTO> obtenerUsuarioPorId(Long id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
-        return usuario.orElse(null);
+        return usuario.map(UsuarioDTO::fromEntity);
     }
 
     @Override
-    public Usuario crearUsuario(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public UsuarioDTO crearUsuario(Usuario usuario) {
+        Usuario nuevoUsuario = usuarioRepository.save(usuario);
+        return UsuarioDTO.fromEntity(nuevoUsuario);
     }
 
     @Override
-    public Usuario actualizarUsuario(Long id, Usuario usuario) {
+    public UsuarioDTO actualizarUsuario(Long id, Usuario usuario) {
         if (usuarioRepository.existsById(id)) {
             usuario.setUsuarioId(id);
-            return usuarioRepository.save(usuario);
+            Usuario usuarioActualizado = usuarioRepository.save(usuario);
+            return UsuarioDTO.fromEntity(usuarioActualizado);
         }
         return null;
     }

@@ -1,21 +1,17 @@
 package com.miprimerspring.nuestroecosistema.service;
 
-import com.miprimerspring.nuestroecosistema.model.Mensaje;
+import com.miprimerspring.nuestroecosistema.DTO.MensajeDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface MensajeService {
 
-    // Crear un mensaje
-    Mensaje crearMensaje(Mensaje mensaje);
+    List<MensajeDTO> obtenerTodosLosMensajes();
 
-    // Obtener todos los mensajes
-    List<Mensaje> obtenerTodosLosMensajes();
+    MensajeDTO obtenerMensajePorId(Long id);
 
-    // Obtener un mensaje por su id
-    Optional<Mensaje> obtenerMensajePorId(Long id);
+    MensajeDTO crearMensaje(MensajeDTO mensajeDTO);
 
-    // Eliminar un mensaje por su id
     void eliminarMensaje(Long id);
+
 }

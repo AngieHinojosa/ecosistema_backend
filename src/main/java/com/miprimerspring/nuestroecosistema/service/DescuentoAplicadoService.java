@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.service;
 
+import com.miprimerspring.nuestroecosistema.DTO.DescuentoAplicadoDTO;
 import com.miprimerspring.nuestroecosistema.model.DescuentoAplicado;
 
 import java.util.List;
@@ -7,16 +8,16 @@ import java.util.List;
 public interface DescuentoAplicadoService {
 
     // Método para obtener todos los descuentos aplicados
-    List<DescuentoAplicado> obtenerTodosLosDescuentosAplicados();
+    List<DescuentoAplicadoDTO> obtenerTodosLosDescuentosAplicados();
 
     // Método para obtener un descuento aplicado por su ID
-    DescuentoAplicado obtenerDescuentoAplicadoPorId(Long id);
+    DescuentoAplicadoDTO obtenerDescuentoAplicadoPorId(Long id);
 
     // Método para crear un nuevo descuento aplicado
-    DescuentoAplicado crearDescuentoAplicado(DescuentoAplicado descuentoAplicado);
+    DescuentoAplicadoDTO crearDescuentoAplicado(DescuentoAplicadoDTO descuentoAplicadoDTO);
 
     // Método para actualizar un descuento aplicado
-    DescuentoAplicado actualizarDescuentoAplicado(Long id, DescuentoAplicado descuentoAplicado);
+    DescuentoAplicadoDTO actualizarDescuentoAplicado(Long id, DescuentoAplicadoDTO descuentoAplicadoDTO);
 
     // Método para eliminar un descuento aplicado
     void eliminarDescuentoAplicado(Long id);

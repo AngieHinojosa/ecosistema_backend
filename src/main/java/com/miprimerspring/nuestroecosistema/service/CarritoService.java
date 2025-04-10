@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.service;
 
+import com.miprimerspring.nuestroecosistema.DTO.CarritoDTO;
 import com.miprimerspring.nuestroecosistema.model.Carrito;
 import com.miprimerspring.nuestroecosistema.model.Usuario;
 
@@ -8,15 +9,15 @@ import java.util.Optional;
 
 public interface CarritoService {
 
-    Carrito crearCarrito(Carrito carrito);
+    Carrito crearCarritoDesdeDTO(CarritoDTO carritoDTO);
 
-    Optional<Carrito> obtenerCarritoPorId(Long carritoId);
+    Optional<CarritoDTO> obtenerCarritoDTOPorId(Long carritoId);
 
-    List<Carrito> obtenerTodosLosCarritos();
+    List<CarritoDTO> obtenerTodosLosCarritosDTO();
 
     void eliminarCarrito(Long carritoId);
 
-    Carrito actualizarCarrito(Long carritoId, Carrito carrito);
+    Carrito actualizarCarritoDesdeDTO(Long carritoId, CarritoDTO carritoDTO);
 
-    List<Carrito> obtenerCarritosPorUsuario(Long usuarioId);
+    List<CarritoDTO> obtenerCarritosPorUsuario(Long usuarioId);
 }
