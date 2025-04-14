@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.api;
 
+import com.miprimerspring.nuestroecosistema.dto.TransaccionDTO;
 import com.miprimerspring.nuestroecosistema.model.Transaccion;
 import com.miprimerspring.nuestroecosistema.service.TransaccionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,38 +8,72 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
-@RequestMapping("/transaccion")
+@RequestMapping("/transacciones")
 public class TransaccionRestController {
 
-    //Crear transacción, obtener transacciones, ver transacciones por cuenta.
+    private final TransaccionService transaccionService;
+
     @Autowired
-    private TransaccionService transaccionService;
-
-    @GetMapping("/lista")
-    public ResponseEntity<List<Transaccion>> listar() {
-        return ResponseEntity.ok(transaccionService.obtenerTodasLasTransacciones());
+    public TransaccionRestController(TransaccionService transaccionService) {
+        this.transaccionService = transaccionService;
     }
 
+    // Crear una nueva transacción
+    @PostMapping("/nueva")
+    public ResponseEntity<TransaccionDTO> crearTransaccion(@RequestBody TransaccionDTO transaccionDTO) {
+        TransaccionDTO transaccion = transaccionService.crearTransaccion(transaccionDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(transaccion);
+    }
+
+    // Obtener transacción por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Transaccion> obtener(@PathVariable Long id) {
-        return ResponseEntity.ok(transaccionService.obtenerTransaccionPorId(id));
+    public ResponseEntity<TransaccionDTO> obtenerTransaccionPorId(@PathVariable("id") Long id) {
+        TransaccionDTO transaccion = transaccionService.obtenerTransaccionPorId(id);
+        return transaccion != null ? ResponseEntity.ok(transaccion) : ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/nuevo")
-    public ResponseEntity<Transaccion> crear(@RequestBody Transaccion obj) {
-        return new ResponseEntity<>(transaccionService.crearTransaccion(obj), HttpStatus.CREATED);
+    // Obtener transacciones por cuenta ID
+    @GetMapping("/cuenta/{cuentaId}")
+    public ResponseEntity<List<TransaccionDTO>> obtenerTransaccionesPorCuentaId(@PathVariable("cuentaId") Integer cuentaId) {
+        List<TransaccionDTO> transacciones = transaccionService.obtenerTransaccionesPorCuentaId(cuentaId);
+        return ResponseEntity.ok(transacciones);
     }
 
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<Transaccion> actualizar(@PathVariable Long id, @RequestBody Transaccion obj) {
-        return ResponseEntity.ok(transaccionService.actualizarTransaccion(id, obj));
+    // Obtener transacciones por cuenta origen ID
+    @GetMapping("/origen/{origenId}")
+    public ResponseEntity<List<TransaccionDTO>> obtenerTransaccionesPorOrigenId(@PathVariable("origenId") Integer origenId) {
+        List<TransaccionDTO> transacciones = transaccionService.obtenerTransaccionesPorOrigenId(origenId);
+        return ResponseEntity.ok(transacciones);
     }
 
-    @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    // Obtener transacciones por cuenta destino ID
+    @GetMapping("/destino/{destinoId}")
+    public ResponseEntity<List<TransaccionDTO>> obtenerTransaccionesPorDestinoId(@PathVariable("destinoId") Integer destinoId) {
+        List<TransaccionDTO> transacciones = transaccionService.obtenerTransaccionesPorDestinoId(destinoId);
+        return ResponseEntity.ok(transacciones);
+    }
+
+    // Obtener transacciones por monto
+    @GetMapping("/monto/{monto}")
+    public ResponseEntity<List<TransaccionDTO>> obtenerTransaccionesPorMonto(@PathVariable("monto") Double monto) {
+        List<TransaccionDTO> transacciones = transaccionService.obtenerTransaccionesPorMonto(monto);
+        return ResponseEntity.ok(transacciones);
+    }
+
+    // Obtener transacciones por fecha
+    @GetMapping("/fecha/{fecha}")
+    public ResponseEntity<List<TransaccionDTO>> obtenerTransaccionesPorFecha(@PathVariable("fecha") Timestamp fecha) {
+        List<TransaccionDTO> transacciones = transaccionService.obtenerTransaccionesPorFecha(fecha);
+        return ResponseEntity.ok(transacciones);
+    }
+
+    // Eliminar transacción
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarTransaccion(@PathVariable("id") Long id) {
         transaccionService.eliminarTransaccion(id);
         return ResponseEntity.noContent().build();
     }

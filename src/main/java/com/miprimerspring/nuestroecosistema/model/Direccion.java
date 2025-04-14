@@ -1,167 +1,51 @@
 package com.miprimerspring.nuestroecosistema.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
-import java.security.Timestamp;
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "direcciones")
 public class Direccion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long direccionId;
+    @Column(name = "direccion_id")
+    private Long direccionId;
 
-    @Column(name = "direccion_tipo", length = 20)
-    private String direccionTipo;
-
-    @Column(name = "direccion_calle")
-    private String direccionCalle;
-
-    @Column(name = "direccion_numero")
-    private String direccionNumero;
-
-    @Column(name = "direccion_comuna")
-    private String direccionComuna;
-
-    @Column(name = "direccion_ciudad")
-    private String direccionCiudad;
-
-    @Column(name = "direccion_region")
-    private String direccionRegion;
-
-    @Column(name = "direccion_codigo_postal")
-    private String direccionCodigoPostal;
-
-    @Column(name = "direccion_pais")
-    private String direccionPais;
-
-    @Column(name = "direccion_activa")
-    private Boolean direccionActiva = true;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    public Direccion() {
-    }
+    @Column(name = "direccion_tipo", length = 20, nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'envio'")
+    private String direccionTipo;
 
-    public Direccion(long direccionId, String direccionTipo, String direccionCalle, String direccionNumero, String direccionComuna, String direccionCiudad, String direccionRegion, String direccionCodigoPostal, String direccionPais, Boolean direccionActiva, Usuario usuario) {
-        this.direccionId = direccionId;
-        this.direccionTipo = direccionTipo;
-        this.direccionCalle = direccionCalle;
-        this.direccionNumero = direccionNumero;
-        this.direccionComuna = direccionComuna;
-        this.direccionCiudad = direccionCiudad;
-        this.direccionRegion = direccionRegion;
-        this.direccionCodigoPostal = direccionCodigoPostal;
-        this.direccionPais = direccionPais;
-        this.direccionActiva = direccionActiva;
-        this.usuario = usuario;
-    }
+    @Column(name = "direccion_calle", length = 255)
+    private String direccionCalle;
 
-    public long getDireccionId() {
-        return direccionId;
-    }
+    @Column(name = "direccion_numero", length = 255)
+    private String direccionNumero;
 
-    public void setDireccionId(long direccionId) {
-        this.direccionId = direccionId;
-    }
+    @Column(name = "direccion_comuna", length = 255)
+    private String direccionComuna;
 
-    public String getDireccionTipo() {
-        return direccionTipo;
-    }
+    @Column(name = "direccion_ciudad", length = 255)
+    private String direccionCiudad;
 
-    public void setDireccionTipo(String direccionTipo) {
-        this.direccionTipo = direccionTipo;
-    }
+    @Column(name = "direccion_region", length = 255)
+    private String direccionRegion;
 
-    public String getDireccionCalle() {
-        return direccionCalle;
-    }
+    @Column(name = "direccion_codigo_postal", length = 255)
+    private String direccionCodigoPostal;
 
-    public void setDireccionCalle(String direccionCalle) {
-        this.direccionCalle = direccionCalle;
-    }
+    @Column(name = "direccion_pais", length = 255)
+    private String direccionPais;
 
-    public String getDireccionNumero() {
-        return direccionNumero;
-    }
+    @Column(name = "direccion_activa", columnDefinition = "TINYINT(1) DEFAULT 1")
+    private Boolean direccionActiva;
 
-    public void setDireccionNumero(String direccionNumero) {
-        this.direccionNumero = direccionNumero;
-    }
-
-    public String getDireccionComuna() {
-        return direccionComuna;
-    }
-
-    public void setDireccionComuna(String direccionComuna) {
-        this.direccionComuna = direccionComuna;
-    }
-
-    public String getDireccionCiudad() {
-        return direccionCiudad;
-    }
-
-    public void setDireccionCiudad(String direccionCiudad) {
-        this.direccionCiudad = direccionCiudad;
-    }
-
-    public String getDireccionRegion() {
-        return direccionRegion;
-    }
-
-    public void setDireccionRegion(String direccionRegion) {
-        this.direccionRegion = direccionRegion;
-    }
-
-    public String getDireccionCodigoPostal() {
-        return direccionCodigoPostal;
-    }
-
-    public void setDireccionCodigoPostal(String direccionCodigoPostal) {
-        this.direccionCodigoPostal = direccionCodigoPostal;
-    }
-
-    public String getDireccionPais() {
-        return direccionPais;
-    }
-
-    public void setDireccionPais(String direccionPais) {
-        this.direccionPais = direccionPais;
-    }
-
-    public Boolean getDireccionActiva() {
-        return direccionActiva;
-    }
-
-    public void setDireccionActiva(Boolean direccionActiva) {
-        this.direccionActiva = direccionActiva;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    @Override
-    public String toString() {
-        return "Direccion{" +
-                "direccionId=" + direccionId +
-                ", direccionTipo='" + direccionTipo + '\'' +
-                ", direccionCalle='" + direccionCalle + '\'' +
-                ", direccionNumero='" + direccionNumero + '\'' +
-                ", direccionComuna='" + direccionComuna + '\'' +
-                ", direccionCiudad='" + direccionCiudad + '\'' +
-                ", direccionRegion='" + direccionRegion + '\'' +
-                ", direccionCodigoPostal='" + direccionCodigoPostal + '\'' +
-                ", direccionPais='" + direccionPais + '\'' +
-                ", direccionActiva=" + direccionActiva +
-                ", usuario=" + usuario +
-                '}';
-    }
+    @Column(name = "direccion_fecha_creacion", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private java.sql.Timestamp direccionFechaCreacion;
 }

@@ -1,6 +1,7 @@
 package com.miprimerspring.nuestroecosistema.service;
 
-import com.miprimerspring.nuestroecosistema.DTO.CuentaBancariaDTO;
+import com.miprimerspring.nuestroecosistema.dto.CuentaBancariaDTO;
+import com.miprimerspring.nuestroecosistema.mapper.CuentaBancariaMapper;
 import com.miprimerspring.nuestroecosistema.model.CuentaBancaria;
 import com.miprimerspring.nuestroecosistema.repository.CuentaBancariaRepository;
 import jakarta.transaction.Transactional;
@@ -15,54 +16,59 @@ import java.util.stream.Collectors;
 @Transactional
 public class CuentaBancariaServiceImpl implements CuentaBancariaService {
 
+    private final CuentaBancariaRepository cuentaBancariaRepository;
+    private final CuentaBancariaMapper cuentaBancariaMapper;
+
     @Autowired
-    private CuentaBancariaRepository cuentaBancariaRepository;
+    public CuentaBancariaServiceImpl(CuentaBancariaRepository cuentaBancariaRepository, CuentaBancariaMapper cuentaBancariaMapper) {
+        this.cuentaBancariaRepository = cuentaBancariaRepository;
+        this.cuentaBancariaMapper = cuentaBancariaMapper;
+    }
 
     @Override
-    public List<CuentaBancariaDTO> obtenerTodasLasCuentaBancarias() {
-        List<CuentaBancaria> cuentas = cuentaBancariaRepository.findAll();
-        return cuentas.stream()
-                .map(cuenta -> new CuentaBancariaDTO(
-                        cuenta.getCuentaId(),
-                        cuenta.getCuentaTipo(),
-                        cuenta.getCuentaSaldo(),
-                        cuenta.getUsuario().getUsuarioId()))  // Mapea la entidad a DTO
-                .collect(Collectors.toList());
+    public CuentaBancariaDTO crearCuentaBancaria(CuentaBancariaDTO cuentaBancariaDTO) {
+        CuentaBancaria cuentaBancaria = cuentaBancariaMapper.toEntity(cuentaBancariaDTO);
+        CuentaBancaria savedCuentaBancaria = cuentaBancariaRepository.save(cuentaBancaria);
+        return cuentaBancariaMapper.toDTO(savedCuentaBancaria);
     }
 
     @Override
     public CuentaBancariaDTO obtenerCuentaBancariaPorId(Long id) {
-        Optional<CuentaBancaria> cuentaBancariaOpt = cuentaBancariaRepository.findById(id);
-        if (cuentaBancariaOpt.isPresent()) {
-            CuentaBancaria cuenta = cuentaBancariaOpt.get();
-            return new CuentaBancariaDTO(
-                    cuenta.getCuentaId(),
-                    cuenta.getCuentaTipo(),
-                    cuenta.getCuentaSaldo(),
-                    cuenta.getUsuario().getUsuarioId());
-        }
-        return null; // o lanzar excepción si lo prefieres
+        CuentaBancaria cuentaBancaria = cuentaBancariaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cuenta Bancaria no encontrada"));
+        return cuentaBancariaMapper.toDTO(cuentaBancaria);
     }
 
     @Override
-    public CuentaBancaria crearCuentaBancaria(CuentaBancaria cuentaBancaria) {
-        return cuentaBancariaRepository.save(cuentaBancaria);  // Guarda la cuenta bancaria
+    public List<CuentaBancariaDTO> obtenerCuentasPorUsuario(Integer usuarioId) {
+        List<CuentaBancaria> cuentas = cuentaBancariaRepository.findByUsuarioId(usuarioId);
+        return cuentas.stream()
+                .map(cuentaBancariaMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public CuentaBancaria actualizarCuentaBancaria(Long id, CuentaBancaria cuentaBancaria) {
-        if (cuentaBancariaRepository.existsById(id)) {
-            cuentaBancaria.setCuentaId(id);  // Establece el ID para la actualización
-            return cuentaBancariaRepository.save(cuentaBancaria);  // Actualiza la cuenta bancaria
-        }
-        return null;  // Si no existe la cuenta, devuelve null
+    public List<CuentaBancariaDTO> obtenerTodasCuentas() {
+        List<CuentaBancaria> cuentas = cuentaBancariaRepository.findAll();
+        return cuentas.stream()
+                .map(cuentaBancariaMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CuentaBancariaDTO actualizarCuentaBancaria(Long id, CuentaBancariaDTO cuentaBancariaDTO) {
+        CuentaBancaria cuentaExistente = cuentaBancariaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cuenta Bancaria no encontrada"));
+        cuentaExistente = cuentaBancariaMapper.toEntity(cuentaBancariaDTO);
+        cuentaExistente.setCuentaId(id);  // Mantener el ID
+        CuentaBancaria updatedCuentaBancaria = cuentaBancariaRepository.save(cuentaExistente);
+        return cuentaBancariaMapper.toDTO(updatedCuentaBancaria);
     }
 
     @Override
     public void eliminarCuentaBancaria(Long id) {
-        if (cuentaBancariaRepository.existsById(id)) {
-            cuentaBancariaRepository.deleteById(id);  // Elimina la cuenta bancaria por su ID
-        }
+        CuentaBancaria cuentaBancaria = cuentaBancariaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cuenta Bancaria no encontrada"));
+        cuentaBancariaRepository.delete(cuentaBancaria);
     }
-
 }

@@ -1,20 +1,16 @@
 package com.miprimerspring.nuestroecosistema.service;
 
-import com.miprimerspring.nuestroecosistema.DTO.CuentaBancariaDTO;
+import com.miprimerspring.nuestroecosistema.dto.CuentaBancariaDTO;
 import com.miprimerspring.nuestroecosistema.model.CuentaBancaria;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CuentaBancariaService {
 
-    List<CuentaBancariaDTO> obtenerTodasLasCuentaBancarias();
-
+    CuentaBancariaDTO crearCuentaBancaria(CuentaBancariaDTO cuentaBancariaDTO);
     CuentaBancariaDTO obtenerCuentaBancariaPorId(Long id);
-
-    CuentaBancaria crearCuentaBancaria(CuentaBancaria cuentaBancaria);
-
-    CuentaBancaria actualizarCuentaBancaria(Long id, CuentaBancaria cuentaBancaria);
-
+    List<CuentaBancariaDTO> obtenerCuentasPorUsuario(Integer usuarioId);
+    List<CuentaBancariaDTO> obtenerTodasCuentas();
+    CuentaBancariaDTO actualizarCuentaBancaria(Long id, CuentaBancariaDTO cuentaBancariaDTO);
     void eliminarCuentaBancaria(Long id);
 }

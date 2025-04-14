@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.api;
 
+import com.miprimerspring.nuestroecosistema.dto.DireccionDTO;
 import com.miprimerspring.nuestroecosistema.model.Direccion;
 import com.miprimerspring.nuestroecosistema.service.DireccionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,39 +11,55 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/direccion")
+@RequestMapping("/direcciones")
 public class DireccionRestController {
 
-    //Gestionar las direcciones de envío y facturación de los usuarios
-    //Crear dirección, obtener direcciones, actualizar dirección, eliminar dirección.
+    private final DireccionService direccionService;
 
     @Autowired
-    private DireccionService direccionService;
-
-    @GetMapping("/lista")
-    public ResponseEntity<List<Direccion>> listar() {
-        return ResponseEntity.ok(direccionService.obtenerTodasLasDirecciones());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Direccion> obtener(@PathVariable Long id) {
-        return ResponseEntity.ok(direccionService.obtenerDireccionPorId(id));
+    public DireccionRestController(DireccionService direccionService) {
+        this.direccionService = direccionService;
     }
 
     @PostMapping("/nueva")
-    public ResponseEntity<Direccion> crear(@RequestBody Direccion obj) {
-        return new ResponseEntity<>(direccionService.crearDireccion(obj), HttpStatus.CREATED);
+    public ResponseEntity<DireccionDTO> crearDireccion(@RequestBody DireccionDTO direccionDTO) {
+        DireccionDTO createdDireccion = direccionService.crearDireccion(direccionDTO);
+        return new ResponseEntity<>(createdDireccion, HttpStatus.CREATED);
     }
 
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<Direccion> actualizar(@PathVariable Long id, @RequestBody Direccion obj) {
-        return ResponseEntity.ok(direccionService.actualizarDireccion(id, obj));
+    @GetMapping("/{id}")
+    public ResponseEntity<DireccionDTO> obtenerDireccion(@PathVariable Integer id) {
+        DireccionDTO direccionDTO = direccionService.obtenerDireccionPorId(id);
+        return new ResponseEntity<>(direccionDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<DireccionDTO>> obtenerDireccionesPorUsuarioId(@PathVariable Integer usuarioId) {
+        List<DireccionDTO> direcciones = direccionService.obtenerDireccionesPorUsuarioId(usuarioId);
+        return new ResponseEntity<>(direcciones, HttpStatus.OK);
+    }
+
+    @GetMapping("/activa")
+    public ResponseEntity<List<DireccionDTO>> obtenerDireccionesActivas(@RequestParam Boolean direccionActiva) {
+        List<DireccionDTO> direcciones = direccionService.obtenerDireccionesActivas(direccionActiva);
+        return new ResponseEntity<>(direcciones, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<DireccionDTO>> obtenerTodasDirecciones() {
+        List<DireccionDTO> direcciones = direccionService.obtenerTodasDirecciones();
+        return new ResponseEntity<>(direcciones, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<DireccionDTO> actualizarDireccion(@PathVariable Integer id, @RequestBody DireccionDTO direccionDTO) {
+        DireccionDTO updatedDireccion = direccionService.actualizarDireccion(id, direccionDTO);
+        return new ResponseEntity<>(updatedDireccion, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarDireccion(@PathVariable Integer id) {
         direccionService.eliminarDireccion(id);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
-

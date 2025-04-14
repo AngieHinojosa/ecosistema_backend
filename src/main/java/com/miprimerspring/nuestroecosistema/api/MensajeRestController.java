@@ -1,8 +1,6 @@
 package com.miprimerspring.nuestroecosistema.api;
 
-import com.miprimerspring.nuestroecosistema.DTO.MensajeDTO;
-import com.miprimerspring.nuestroecosistema.model.Mensaje;
-import com.miprimerspring.nuestroecosistema.model.Usuario;
+import com.miprimerspring.nuestroecosistema.dto.MensajeDTO;
 import com.miprimerspring.nuestroecosistema.service.MensajeService;
 import com.miprimerspring.nuestroecosistema.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,54 +9,63 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/mensaje")
+@RequestMapping("/mensajes")
 public class MensajeRestController {
 
-    @Autowired
-    private MensajeService mensajeService;
+    private final MensajeService mensajeService;
 
     @Autowired
-    private UsuarioService usuarioService; // Asegúrate de tener el servicio de Usuario
-
-    // Obtener todos los mensajes, transformados a DTOs
-    @GetMapping("/lista")
-    public ResponseEntity<List<MensajeDTO>> listar() {
-        // Obtener los mensajes como DTOs
-        List<MensajeDTO> mensajeDTOs = mensajeService.obtenerTodosLosMensajes();
-        return ResponseEntity.ok(mensajeDTOs);
+    public MensajeRestController(MensajeService mensajeService) {
+        this.mensajeService = mensajeService;
     }
 
-    // Obtener un mensaje por su ID, transformado a DTO
-    @GetMapping("/{id}")
-    public ResponseEntity<MensajeDTO> obtener(@PathVariable Long id) {
-        // Obtener el mensaje como un DTO
-        MensajeDTO mensajeDTO = mensajeService.obtenerMensajePorId(id);
-
-        // Verificar si el mensajeDTO es null o no encontrado
-        if (mensajeDTO != null) {
-            return ResponseEntity.ok(mensajeDTO);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    // Crear un nuevo mensaje, pasando un DTO y transformando la respuesta a DTO
     @PostMapping("/nuevo")
-    public ResponseEntity<MensajeDTO> crear(@RequestBody MensajeDTO mensajeDTO) {
-        // Convierte el DTO en la entidad Mensaje
-        MensajeDTO mensajeGuardadoDTO = mensajeService.crearMensaje(mensajeDTO);  // Esto ahora retorna un DTO
-
-        return new ResponseEntity<>(mensajeGuardadoDTO, HttpStatus.CREATED); // Devolver el DTO
+    public ResponseEntity<MensajeDTO> crearMensaje(@RequestBody MensajeDTO mensajeDTO) {
+        MensajeDTO createdMensaje = mensajeService.crearMensaje(mensajeDTO);
+        return new ResponseEntity<>(createdMensaje, HttpStatus.CREATED);
     }
 
-    // Eliminar un mensaje
-    @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<MensajeDTO> obtenerMensaje(@PathVariable Long id) {
+        MensajeDTO mensajeDTO = mensajeService.obtenerMensajePorId(id);
+        return new ResponseEntity<>(mensajeDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/emisor/{emisorId}")
+    public ResponseEntity<List<MensajeDTO>> obtenerMensajesPorEmisorId(@PathVariable Integer emisorId) {
+        List<MensajeDTO> mensajes = mensajeService.obtenerMensajesPorEmisorId(emisorId);
+        return new ResponseEntity<>(mensajes, HttpStatus.OK);
+    }
+
+    @GetMapping("/receptor/{receptorId}")
+    public ResponseEntity<List<MensajeDTO>> obtenerMensajesPorReceptorId(@PathVariable Integer receptorId) {
+        List<MensajeDTO> mensajes = mensajeService.obtenerMensajesPorReceptorId(receptorId);
+        return new ResponseEntity<>(mensajes, HttpStatus.OK);
+    }
+
+    @GetMapping("/leido/{mensajeLeido}")
+    public ResponseEntity<List<MensajeDTO>> obtenerMensajesPorLeido(@PathVariable Boolean mensajeLeido) {
+        List<MensajeDTO> mensajes = mensajeService.obtenerMensajesPorLeido(mensajeLeido);
+        return new ResponseEntity<>(mensajes, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<MensajeDTO>> obtenerTodosMensajes() {
+        List<MensajeDTO> mensajes = mensajeService.obtenerTodosMensajes();
+        return new ResponseEntity<>(mensajes, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MensajeDTO> actualizarMensaje(@PathVariable Long id, @RequestBody MensajeDTO mensajeDTO) {
+        MensajeDTO updatedMensaje = mensajeService.actualizarMensaje(id, mensajeDTO);
+        return new ResponseEntity<>(updatedMensaje, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarMensaje(@PathVariable Long id) {
         mensajeService.eliminarMensaje(id);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

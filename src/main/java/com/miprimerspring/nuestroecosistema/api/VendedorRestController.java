@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.api;
 
+import com.miprimerspring.nuestroecosistema.dto.VendedorDTO;
 import com.miprimerspring.nuestroecosistema.model.Vendedor;
 import com.miprimerspring.nuestroecosistema.service.VendedorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,36 +11,54 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/vendedor")
+@RequestMapping("/vendedores")
 public class VendedorRestController {
 
-    //Gestionar las tiendas y productos de los vendedores.
-    //Crear vendedor, obtener vendedores, actualizar vendedor.
+    private final VendedorService vendedorService;
+
     @Autowired
-    private VendedorService vendedorService;
-
-    @GetMapping("/lista")
-    public ResponseEntity<List<Vendedor>> listar() {
-        return ResponseEntity.ok(vendedorService.obtenerTodosLosVendedores());
+    public VendedorRestController(VendedorService vendedorService) {
+        this.vendedorService = vendedorService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Vendedor> obtener(@PathVariable Long id) {
-        return ResponseEntity.ok(vendedorService.obtenerVendedorPorId(id));
-    }
-
+    // Crear un nuevo vendedor
     @PostMapping("/nuevo")
-    public ResponseEntity<Vendedor> crear(@RequestBody Vendedor obj) {
-        return new ResponseEntity<>(vendedorService.crearVendedor(obj), HttpStatus.CREATED);
+    public ResponseEntity<VendedorDTO> crearVendedor(@RequestBody VendedorDTO vendedorDTO) {
+        VendedorDTO vendedor = vendedorService.crearVendedor(vendedorDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(vendedor);
     }
 
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<Vendedor> actualizar(@PathVariable Long id, @RequestBody Vendedor obj) {
-        return ResponseEntity.ok(vendedorService.actualizarVendedor(id, obj));
+    // Obtener vendedor por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<VendedorDTO> obtenerVendedorPorId(@PathVariable("id") Long id) {
+        VendedorDTO vendedor = vendedorService.obtenerVendedorPorId(id);
+        return vendedor != null ? ResponseEntity.ok(vendedor) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    // Obtener vendedor por ID de usuario
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<VendedorDTO> obtenerVendedorPorUsuarioId(@PathVariable("usuarioId") Integer usuarioId) {
+        VendedorDTO vendedor = vendedorService.obtenerVendedorPorUsuarioId(usuarioId);
+        return vendedor != null ? ResponseEntity.ok(vendedor) : ResponseEntity.notFound().build();
+    }
+
+    // Obtener vendedores por nombre de tienda
+    @GetMapping("/nombre-tienda/{nombreTienda}")
+    public ResponseEntity<List<VendedorDTO>> obtenerVendedoresPorNombreTienda(@PathVariable("nombreTienda") String nombreTienda) {
+        List<VendedorDTO> vendedores = vendedorService.obtenerVendedoresPorNombreTienda(nombreTienda);
+        return ResponseEntity.ok(vendedores);
+    }
+
+    // Obtener vendedores por estado
+    @GetMapping("/estado/{estado}")
+    public ResponseEntity<List<VendedorDTO>> obtenerVendedoresPorEstado(@PathVariable("estado") String estado) {
+        List<VendedorDTO> vendedores = vendedorService.obtenerVendedoresPorEstado(estado);
+        return ResponseEntity.ok(vendedores);
+    }
+
+    // Eliminar vendedor por ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarVendedor(@PathVariable("id") Long id) {
         vendedorService.eliminarVendedor(id);
         return ResponseEntity.noContent().build();
     }

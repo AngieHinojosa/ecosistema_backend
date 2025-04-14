@@ -1,5 +1,7 @@
 package com.miprimerspring.nuestroecosistema.service;
 
+import com.miprimerspring.nuestroecosistema.dto.DescuentoExternoDTO;
+import com.miprimerspring.nuestroecosistema.mapper.DescuentosExternosMapper;
 import com.miprimerspring.nuestroecosistema.model.DescuentosExternos;
 import com.miprimerspring.nuestroecosistema.repository.DescuentosExternosRepository;
 import jakarta.transaction.Transactional;
@@ -8,43 +10,65 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class DescuentosExternosServiceImpl implements  DescuentosExternosService {
 
+    private final DescuentosExternosRepository descuentosExternosRepository;
+    private final DescuentosExternosMapper descuentosExternosMapper;
+
     @Autowired
-    private DescuentosExternosRepository descuentosExternosRepository;
-
-    @Override
-    public List<DescuentosExternos> obtenerTodosLosDescuentosExternos() {
-        return descuentosExternosRepository.findAll();  // Devuelve todos los descuentos externos
+    public DescuentosExternosServiceImpl(DescuentosExternosRepository descuentosExternosRepository, DescuentosExternosMapper descuentosExternosMapper) {
+        this.descuentosExternosRepository = descuentosExternosRepository;
+        this.descuentosExternosMapper = descuentosExternosMapper;
     }
 
     @Override
-    public DescuentosExternos obtenerDescuentoExternoPorId(Long id) {
-        Optional<DescuentosExternos> descuentosExternos = descuentosExternosRepository.findById(id);
-        return descuentosExternos.orElse(null);  // Si no existe, devuelve null
+    public DescuentoExternoDTO crearDescuentoExterno(DescuentoExternoDTO descuentoExternoDTO) {
+        DescuentosExternos descuentoExterno = descuentosExternosMapper.toEntity(descuentoExternoDTO);
+        DescuentosExternos savedDescuentoExterno = descuentosExternosRepository.save(descuentoExterno);
+        return descuentosExternosMapper.toDTO(savedDescuentoExterno);
     }
 
     @Override
-    public DescuentosExternos crearDescuentoExterno(DescuentosExternos descuentosExternos) {
-        return descuentosExternosRepository.save(descuentosExternos);  // Guarda el descuento externo
+    public DescuentoExternoDTO obtenerDescuentoExternoPorId(Integer id) {
+        DescuentosExternos descuentoExterno = descuentosExternosRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Descuento Externo no encontrado"));
+        return descuentosExternosMapper.toDTO(descuentoExterno);
     }
 
     @Override
-    public DescuentosExternos actualizarDescuentoExterno(Long id, DescuentosExternos descuentosExternos) {
-        if (descuentosExternosRepository.existsById(id)) {
-            descuentosExternos.setDescuentoId(id);  // Establece el ID del descuento a actualizar
-            return descuentosExternosRepository.save(descuentosExternos);  // Actualiza el descuento
-        }
-        return null;  // Si no existe, devuelve null
+    public List<DescuentoExternoDTO> obtenerDescuentosActivos(Boolean descuentoActivo) {
+        List<DescuentosExternos> descuentos = descuentosExternosRepository.findByDescuentoActivo(descuentoActivo);
+        return descuentos.stream()
+                .map(descuentosExternosMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void eliminarDescuentoExterno(Long id) {
-        if (descuentosExternosRepository.existsById(id)) {
-            descuentosExternosRepository.deleteById(id);  // Elimina el descuento externo por su ID
-        }
+    public List<DescuentoExternoDTO> obtenerTodosDescuentosExternos() {
+        List<DescuentosExternos> descuentos = descuentosExternosRepository.findAll();
+        return descuentos.stream()
+                .map(descuentosExternosMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public DescuentoExternoDTO actualizarDescuentoExterno(Integer id, DescuentoExternoDTO descuentoExternoDTO) {
+        DescuentosExternos descuentoExistente = descuentosExternosRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Descuento Externo no encontrado"));
+        descuentoExistente = descuentosExternosMapper.toEntity(descuentoExternoDTO);
+        descuentoExistente.setDescuentoId(id);  // Mantener el ID
+        DescuentosExternos updatedDescuentoExterno = descuentosExternosRepository.save(descuentoExistente);
+        return descuentosExternosMapper.toDTO(updatedDescuentoExterno);
+    }
+
+    @Override
+    public void eliminarDescuentoExterno(Integer id) {
+        DescuentosExternos descuentoExterno = descuentosExternosRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Descuento Externo no encontrado"));
+        descuentosExternosRepository.delete(descuentoExterno);
     }
 }

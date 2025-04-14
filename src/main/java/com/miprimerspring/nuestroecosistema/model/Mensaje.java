@@ -1,98 +1,34 @@
 package com.miprimerspring.nuestroecosistema.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
-import java.sql.Timestamp;
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "mensajes")
 public class Mensaje {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long mensajeId;
+    @Column(name = "mensaje_id")
+    private Long mensajeId;
 
-    private String mensajeContenido;
-    private Boolean mensajeLeido;
-    private Timestamp mensajeEnviadoEn;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "emisor_id", nullable = false)
     private Usuario emisor;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "receptor_id", nullable = false)
     private Usuario receptor;
 
-    public Mensaje() {
-    }
+    @Column(name = "mensaje_contenido", length = 255)
+    private String mensajeContenido;
 
-    public Mensaje(long mensajeId, String mensajeContenido, Boolean mensajeLeido, Timestamp mensajeEnviadoEn, Usuario emisor, Usuario receptor) {
-        this.mensajeId = mensajeId;
-        this.mensajeContenido = mensajeContenido;
-        this.mensajeLeido = mensajeLeido;
-        this.mensajeEnviadoEn = mensajeEnviadoEn;
-        this.emisor = emisor;
-        this.receptor = receptor;
-    }
+    @Column(name = "mensaje_leido", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private Boolean mensajeLeido;
 
-    public long getMensajeId() {
-        return mensajeId;
-    }
-
-    public void setMensajeId(long mensajeId) {
-        this.mensajeId = mensajeId;
-    }
-
-    public String getMensajeContenido() {
-        return mensajeContenido;
-    }
-
-    public void setMensajeContenido(String mensajeContenido) {
-        this.mensajeContenido = mensajeContenido;
-    }
-
-    public Boolean getMensajeLeido() {
-        return mensajeLeido;
-    }
-
-    public void setMensajeLeido(Boolean mensajeLeido) {
-        this.mensajeLeido = mensajeLeido;
-    }
-
-    public Timestamp getMensajeEnviadoEn() {
-        return mensajeEnviadoEn;
-    }
-
-    public void setMensajeEnviadoEn(Timestamp mensajeEnviadoEn) {
-        this.mensajeEnviadoEn = mensajeEnviadoEn;
-    }
-
-    public Usuario getEmisor() {
-        return emisor;
-    }
-
-    public void setEmisor(Usuario emisor) {
-        this.emisor = emisor;
-    }
-
-    public Usuario getReceptor() {
-        return receptor;
-    }
-
-    public void setReceptor(Usuario receptor) {
-        this.receptor = receptor;
-    }
-
-    @Override
-    public String toString() {
-        return "Mensaje{" +
-                "mensajeId=" + mensajeId +
-                ", mensajeContenido='" + mensajeContenido + '\'' +
-                ", mensajeLeido=" + mensajeLeido +
-                ", mensajeEnviadoEn=" + mensajeEnviadoEn +
-                ", emisor=" + emisor +
-                ", receptor=" + receptor +
-                '}';
-    }
+    @Column(name = "mensaje_enviado_en", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private java.sql.Timestamp mensajeEnviadoEn;
 }

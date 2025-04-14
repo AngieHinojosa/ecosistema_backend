@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.api;
 
+import com.miprimerspring.nuestroecosistema.dto.UsuarioDescuentoDTO;
 import com.miprimerspring.nuestroecosistema.model.UsuarioDescuento;
 import com.miprimerspring.nuestroecosistema.service.UsuarioDescuentoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,34 +11,56 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/usuario-descuento")
+@RequestMapping("/usuarios-descuentos")
 public class UsuarioDescuentoRestController {
 
+    private final UsuarioDescuentoService usuarioDescuentoService;
+
     @Autowired
-    private UsuarioDescuentoService usuarioDescuentoService;
-
-    @GetMapping("/lista")
-    public ResponseEntity<List<UsuarioDescuento>> listar() {
-        return ResponseEntity.ok(usuarioDescuentoService.obtenerTodosLosUsuarioDescuentos());
+    public UsuarioDescuentoRestController(UsuarioDescuentoService usuarioDescuentoService) {
+        this.usuarioDescuentoService = usuarioDescuentoService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDescuento> obtener(@PathVariable Long id) {
-        return ResponseEntity.ok(usuarioDescuentoService.obtenerUsuarioDescuentoPorId(id));
-    }
-
+    // Crear una nueva relación usuario-descuento
     @PostMapping("/nuevo")
-    public ResponseEntity<UsuarioDescuento> crear(@RequestBody UsuarioDescuento obj) {
-        return new ResponseEntity<>(usuarioDescuentoService.crearUsuarioDescuento(obj), HttpStatus.CREATED);
+    public ResponseEntity<UsuarioDescuentoDTO> crearUsuarioDescuento(@RequestBody UsuarioDescuentoDTO usuarioDescuentoDTO) {
+        UsuarioDescuentoDTO usuarioDescuento = usuarioDescuentoService.crearUsuarioDescuento(usuarioDescuentoDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioDescuento);
     }
 
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<UsuarioDescuento> actualizar(@PathVariable Long id, @RequestBody UsuarioDescuento obj) {
-        return ResponseEntity.ok(usuarioDescuentoService.actualizarUsuarioDescuento(id, obj));
+    // Obtener relación usuario-descuento por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioDescuentoDTO> obtenerUsuarioDescuentoPorId(@PathVariable("id") Long id) {
+        UsuarioDescuentoDTO usuarioDescuento = usuarioDescuentoService.obtenerUsuarioDescuentoPorId(id);
+        return usuarioDescuento != null ? ResponseEntity.ok(usuarioDescuento) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    // Obtener relaciones usuario-descuento por usuario ID
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<UsuarioDescuentoDTO>> obtenerUsuarioDescuentosPorUsuarioId(@PathVariable("usuarioId") Integer usuarioId) {
+        List<UsuarioDescuentoDTO> usuarioDescuentos = usuarioDescuentoService.obtenerUsuarioDescuentosPorUsuarioId(usuarioId);
+        return ResponseEntity.ok(usuarioDescuentos);
+    }
+
+    // Obtener relaciones usuario-descuento por descuento ID
+    @GetMapping("/descuento/{descuentoId}")
+    public ResponseEntity<List<UsuarioDescuentoDTO>> obtenerUsuarioDescuentosPorDescuentoId(@PathVariable("descuentoId") Long descuentoId) {
+        List<UsuarioDescuentoDTO> usuarioDescuentos = usuarioDescuentoService.obtenerUsuarioDescuentosPorDescuentoId(descuentoId);
+        return ResponseEntity.ok(usuarioDescuentos);
+    }
+
+    // Obtener relación usuario-descuento por usuario ID y descuento ID
+    @GetMapping("/usuario/{usuarioId}/descuento/{descuentoId}")
+    public ResponseEntity<UsuarioDescuentoDTO> obtenerUsuarioDescuentoPorUsuarioYDescuento(
+            @PathVariable("usuarioId") Integer usuarioId,
+            @PathVariable("descuentoId") Long descuentoId) {
+        UsuarioDescuentoDTO usuarioDescuento = usuarioDescuentoService.obtenerUsuarioDescuentoPorUsuarioYDescuento(usuarioId, descuentoId);
+        return usuarioDescuento != null ? ResponseEntity.ok(usuarioDescuento) : ResponseEntity.notFound().build();
+    }
+
+    // Eliminar relación usuario-descuento
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarUsuarioDescuento(@PathVariable("id") Long id) {
         usuarioDescuentoService.eliminarUsuarioDescuento(id);
         return ResponseEntity.noContent().build();
     }

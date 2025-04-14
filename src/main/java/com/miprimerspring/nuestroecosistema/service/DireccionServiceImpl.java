@@ -1,5 +1,7 @@
 package com.miprimerspring.nuestroecosistema.service;
 
+import com.miprimerspring.nuestroecosistema.dto.DireccionDTO;
+import com.miprimerspring.nuestroecosistema.mapper.DireccionMapper;
 import com.miprimerspring.nuestroecosistema.model.Direccion;
 import com.miprimerspring.nuestroecosistema.repository.DireccionRepository;
 import jakarta.transaction.Transactional;
@@ -7,46 +9,73 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class DireccionServiceImpl implements DireccionService {
 
+    private final DireccionRepository direccionRepository;
+    private final DireccionMapper direccionMapper;
+
     @Autowired
-    private DireccionRepository direccionRepository;
-
-    @Override
-    public List<Direccion> obtenerTodasLasDirecciones() {
-        return direccionRepository.findAll();  // Devuelve todas las direcciones
+    public DireccionServiceImpl(DireccionRepository direccionRepository, DireccionMapper direccionMapper) {
+        this.direccionRepository = direccionRepository;
+        this.direccionMapper = direccionMapper;
     }
 
     @Override
-    public Direccion obtenerDireccionPorId(Long id) {
-        Optional<Direccion> direccion = direccionRepository.findById(id);
-        return direccion.orElse(null);  // Si no existe, devuelve null
+    public DireccionDTO crearDireccion(DireccionDTO direccionDTO) {
+        Direccion direccion = direccionMapper.toEntity(direccionDTO);
+        Direccion savedDireccion = direccionRepository.save(direccion);
+        return direccionMapper.toDTO(savedDireccion);
     }
 
     @Override
-    public Direccion crearDireccion(Direccion direccion) {
-        return direccionRepository.save(direccion);  // Guarda la dirección
+    public DireccionDTO obtenerDireccionPorId(Integer id) {
+        Direccion direccion = direccionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Dirección no encontrada"));
+        return direccionMapper.toDTO(direccion);
     }
 
     @Override
-    public Direccion actualizarDireccion(Long id, Direccion direccion) {
-        if (direccionRepository.existsById(id)) {
-            direccion.setDireccionId(id);  // Establece el ID de la dirección a actualizar
-            return direccionRepository.save(direccion);  // Actualiza la dirección
-        }
-        return null;  // Si no existe, devuelve null
+    public List<DireccionDTO> obtenerDireccionesPorUsuarioId(Integer usuarioId) {
+        List<Direccion> direcciones = direccionRepository.findByUsuario_UsuarioId(usuarioId);
+        return direcciones.stream()
+                .map(direccionMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void eliminarDireccion(Long id) {
-        if (direccionRepository.existsById(id)) {
-            direccionRepository.deleteById(id);  // Elimina la dirección por su ID
-        }
+    public List<DireccionDTO> obtenerDireccionesActivas(Boolean direccionActiva) {
+        List<Direccion> direcciones = direccionRepository.findByDireccionActiva(direccionActiva);
+        return direcciones.stream()
+                .map(direccionMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
+    @Override
+    public List<DireccionDTO> obtenerTodasDirecciones() {
+        List<Direccion> direcciones = direccionRepository.findAll();
+        return direcciones.stream()
+                .map(direccionMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public DireccionDTO actualizarDireccion(Integer id, DireccionDTO direccionDTO) {
+        Direccion direccionExistente = direccionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Dirección no encontrada"));
+        direccionExistente = direccionMapper.toEntity(direccionDTO);
+        direccionExistente.setDireccionId(Long.valueOf(id));  // Mantener el ID
+        Direccion updatedDireccion = direccionRepository.save(direccionExistente);
+        return direccionMapper.toDTO(updatedDireccion);
+    }
+
+    @Override
+    public void eliminarDireccion(Integer id) {
+        Direccion direccion = direccionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Dirección no encontrada"));
+        direccionRepository.delete(direccion);
+    }
 }
-

@@ -1,77 +1,50 @@
 package com.miprimerspring.nuestroecosistema.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
+import java.math.BigDecimal;
 import java.sql.Date;
-import java.util.List;
+import java.sql.Timestamp;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "pedidos")
 public class Pedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long pedidoId;
+    @Column(name = "pedido_id")
+    private Long pedidoId;  // Debería ser Long
 
-    @Column(name = "pedido_fecha", nullable = false)
-    private Date pedidoFecha;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @OneToMany(mappedBy = "pedido")
-    private List<PedidoDetalle> productos;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "direccion_id", nullable = false)
+    private Direccion direccion;
 
-    public Pedido() {
-    }
+    @Column(name = "pedido_total", precision = 14, scale = 2)
+    private BigDecimal pedidoTotal;
 
-    public Pedido(long pedidoId, Date pedidoFecha, Usuario usuario, List<PedidoDetalle> productos) {
-        this.pedidoId = pedidoId;
-        this.pedidoFecha = pedidoFecha;
-        this.usuario = usuario;
-        this.productos = productos;
-    }
+    @Column(name = "pedido_moneda", length = 10)
+    private String pedidoMoneda;
 
-    public long getPedidoId() {
-        return pedidoId;
-    }
+    @Column(name = "pedido_estado", length = 20)
+    private String pedidoEstado;
 
-    public void setPedidoId(long pedidoId) {
-        this.pedidoId = pedidoId;
-    }
+    @Column(name = "pedido_metodo_pago", length = 50)
+    private String pedidoMetodoPago;
 
-    public Date getPedidoFecha() {
-        return pedidoFecha;
-    }
+    @Column(name = "pedido_uuid_pago", length = 36)
+    private String pedidoUuidPago;
 
-    public void setPedidoFecha(Date pedidoFecha) {
-        this.pedidoFecha = pedidoFecha;
-    }
+    @Column(name = "pedido_creado_en", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Timestamp pedidoCreadoEn;
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public List<PedidoDetalle> getProductos() {
-        return productos;
-    }
-
-    public void setProductos(List<PedidoDetalle> productos) {
-        this.productos = productos;
-    }
-
-    @Override
-    public String toString() {
-        return "Pedido{" +
-                "pedidoId=" + pedidoId +
-                ", pedidoFecha=" + pedidoFecha +
-                ", usuario=" + usuario +
-                ", productos=" + productos +
-                '}';
-    }
+    @Column(name = "pedido_fecha", nullable = false)
+    private Date pedidoFecha;
 }

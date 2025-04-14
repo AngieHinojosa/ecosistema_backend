@@ -1,20 +1,17 @@
 package com.miprimerspring.nuestroecosistema.service;
 
+import com.miprimerspring.nuestroecosistema.dto.LogsActividadDTO;
 import com.miprimerspring.nuestroecosistema.model.LogsActividad;
 
 import java.util.List;
 
 public interface LogsActividadService {
 
-    // Obtener todos los logs de actividad
-    List<LogsActividad> obtenerTodosLosLogs();
-
-    // Obtener un log de actividad por su ID
-    LogsActividad obtenerLogPorId(Long id);
-
-    // Crear un nuevo log de actividad
-    LogsActividad crearLogActividad(LogsActividad logsActividad);
-
-    // Eliminar un log de actividad
+    LogsActividadDTO crearLogActividad(LogsActividadDTO logsActividadDTO);
+    LogsActividadDTO obtenerLogActividadPorId(Long id);
+    List<LogsActividadDTO> obtenerLogsPorUsuarioId(Integer usuarioId);
+    List<LogsActividadDTO> obtenerLogsPorAccion(String logAccion);
+    List<LogsActividadDTO> obtenerTodosLogs();
+    LogsActividadDTO actualizarLogActividad(Long id, LogsActividadDTO logsActividadDTO);
     void eliminarLogActividad(Long id);
 }

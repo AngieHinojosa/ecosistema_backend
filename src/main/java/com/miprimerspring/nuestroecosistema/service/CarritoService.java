@@ -1,23 +1,17 @@
 package com.miprimerspring.nuestroecosistema.service;
 
-import com.miprimerspring.nuestroecosistema.DTO.CarritoDTO;
+import com.miprimerspring.nuestroecosistema.dto.CarritoDTO;
 import com.miprimerspring.nuestroecosistema.model.Carrito;
-import com.miprimerspring.nuestroecosistema.model.Usuario;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CarritoService {
 
-    Carrito crearCarritoDesdeDTO(CarritoDTO carritoDTO);
-
-    Optional<CarritoDTO> obtenerCarritoDTOPorId(Long carritoId);
-
-    List<CarritoDTO> obtenerTodosLosCarritosDTO();
-
-    void eliminarCarrito(Long carritoId);
-
-    Carrito actualizarCarritoDesdeDTO(Long carritoId, CarritoDTO carritoDTO);
-
+    CarritoDTO crearCarrito(CarritoDTO carritoDTO);
+    CarritoDTO obtenerCarritoPorId(Long id);
     List<CarritoDTO> obtenerCarritosPorUsuario(Long usuarioId);
+    List<CarritoDTO> obtenerTodosCarritos();
+    CarritoDTO actualizarCarrito(Long id, CarritoDTO carritoDTO);
+    void eliminarCarrito(Long id);
 }

@@ -1,22 +1,18 @@
 package com.miprimerspring.nuestroecosistema.service;
 
-import com.miprimerspring.nuestroecosistema.DTO.PagosDTO;
-import com.miprimerspring.nuestroecosistema.model.Pagos;
+import com.miprimerspring.nuestroecosistema.dto.PagoDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface PagosService {
 
-    // Crear un pago
-    PagosDTO crearPago(PagosDTO pagoDTO);
-
-    // Obtener todos los pagos
-    List<PagosDTO> obtenerTodosLosPagos();
-
-    // Obtener un pago por su id
-    Optional<PagosDTO> obtenerPagoPorId(Long id);
-
-    // Eliminar un pago por su id
+    PagoDTO crearPago(PagoDTO pagoDTO);
+    PagoDTO obtenerPagoPorId(Long id);
+    List<PagoDTO> obtenerPagosPorPedidoId(Integer pedidoId);
+    List<PagoDTO> obtenerPagosPorCuentaId(Integer cuentaId);
+    List<PagoDTO> obtenerPagosPorMetodo(String metodo);
+    List<PagoDTO> obtenerTodosPagos();
+    PagoDTO actualizarPago(Long id, PagoDTO pagoDTO);
     void eliminarPago(Long id);
 }

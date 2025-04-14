@@ -1,6 +1,7 @@
 package com.miprimerspring.nuestroecosistema.service;
 
-import com.miprimerspring.nuestroecosistema.DTO.CarritoDTO;
+import com.miprimerspring.nuestroecosistema.dto.CarritoDTO;
+import com.miprimerspring.nuestroecosistema.mapper.CarritoMapper;
 import com.miprimerspring.nuestroecosistema.model.Carrito;
 import com.miprimerspring.nuestroecosistema.model.Producto;
 import com.miprimerspring.nuestroecosistema.model.Usuario;
@@ -21,85 +22,58 @@ import java.util.stream.Collectors;
 public class CarritoServiceImpl implements CarritoService {
 
     private final CarritoRepository carritoRepository;
-    private final UsuarioRepository usuarioRepository;
-    private final ProductoRepository productoRepository;
+    private final CarritoMapper carritoMapper;
 
     @Autowired
-    public CarritoServiceImpl(CarritoRepository carritoRepository, UsuarioRepository usuarioRepository, ProductoRepository productoRepository) {
+    public CarritoServiceImpl(CarritoRepository carritoRepository, CarritoMapper carritoMapper) {
         this.carritoRepository = carritoRepository;
-        this.usuarioRepository = usuarioRepository;
-        this.productoRepository = productoRepository;
+        this.carritoMapper = carritoMapper;
     }
 
     @Override
-    public Carrito crearCarritoDesdeDTO(CarritoDTO carritoDTO) {
-        Usuario usuario = usuarioRepository.findById(carritoDTO.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        Producto producto = productoRepository.findById(carritoDTO.getProductoId())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
-        Carrito carrito = new Carrito();
-        carrito.setUsuario(usuario);
-        carrito.setProducto(producto);
-        carrito.setCantidad(carritoDTO.getCantidad());
-        carrito.setAgregadoEn(LocalDateTime.now());
-
-        return carritoRepository.save(carrito);
+    public CarritoDTO crearCarrito(CarritoDTO carritoDTO) {
+        Carrito carrito = carritoMapper.toEntity(carritoDTO);
+        Carrito savedCarrito = carritoRepository.save(carrito);
+        return carritoMapper.toDTO(savedCarrito);
     }
 
     @Override
-    public Optional<CarritoDTO> obtenerCarritoDTOPorId(Long carritoId) {
-        Optional<Carrito> carrito = carritoRepository.findById(carritoId);
-        return carrito.map(carrito1 -> new CarritoDTO());  // Usamos el constructor que acepta un Carrito
-    }
-
-    @Override
-    public List<CarritoDTO> obtenerTodosLosCarritosDTO() {
-        List<Carrito> carritos = carritoRepository.findAll();
-        return carritos.stream()
-                .map(this::convertirACarritoDTO) // Convierte cada carrito en un DTO
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public void eliminarCarrito(Long carritoId) {
-        carritoRepository.deleteById(carritoId);
-    }
-
-    @Override
-    public Carrito actualizarCarritoDesdeDTO(Long carritoId, CarritoDTO carritoDTO) {
-        Carrito carritoExistente = carritoRepository.findById(carritoId)
+    public CarritoDTO obtenerCarritoPorId(Long id) {
+        Carrito carrito = carritoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
-
-        Usuario usuario = usuarioRepository.findById(carritoDTO.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        Producto producto = productoRepository.findById(carritoDTO.getProductoId())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
-        carritoExistente.setUsuario(usuario);
-        carritoExistente.setProducto(producto);
-        carritoExistente.setCantidad(carritoDTO.getCantidad());
-        carritoExistente.setAgregadoEn(carritoDTO.getAgregadoEn());
-
-        return carritoRepository.save(carritoExistente);
+        return carritoMapper.toDTO(carrito);
     }
 
     @Override
     public List<CarritoDTO> obtenerCarritosPorUsuario(Long usuarioId) {
-        List<Carrito> carritos = carritoRepository.findByUsuarioUsuarioId(usuarioId);
+        List<Carrito> carritos = carritoRepository.findCarritosByUsuarioId(usuarioId);
         return carritos.stream()
-                .map(this::convertirACarritoDTO)
+                .map(carritoMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    // Método auxiliar para convertir Carrito a CarritoDTO
-    private CarritoDTO convertirACarritoDTO(Carrito carrito) {
-        CarritoDTO carritoDTO = new CarritoDTO();
-        carritoDTO.setCarritoId(carrito.getCarritoId());
-        carritoDTO.setUsuarioId(carrito.getUsuario().getUsuarioId());
-        carritoDTO.setProductoId(carrito.getProducto().getProductoId());
-        carritoDTO.setCantidad(carrito.getCantidad());
-        carritoDTO.setAgregadoEn(carrito.getAgregadoEn());
-        return carritoDTO;
+    @Override
+    public List<CarritoDTO> obtenerTodosCarritos() {
+        List<Carrito> carritos = carritoRepository.findAll();
+        return carritos.stream()
+                .map(carritoMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CarritoDTO actualizarCarrito(Long id, CarritoDTO carritoDTO) {
+        Carrito carritoExistente = carritoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+        carritoExistente = carritoMapper.toEntity(carritoDTO);
+        carritoExistente.setCarritoId(id);  // Mantener el ID
+        Carrito updatedCarrito = carritoRepository.save(carritoExistente);
+        return carritoMapper.toDTO(updatedCarrito);
+    }
+
+    @Override
+    public void eliminarCarrito(Long id) {
+        Carrito carrito = carritoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+        carritoRepository.delete(carrito);
     }
 }

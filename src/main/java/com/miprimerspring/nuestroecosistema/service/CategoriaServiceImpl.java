@@ -1,6 +1,7 @@
 package com.miprimerspring.nuestroecosistema.service;
 
-import com.miprimerspring.nuestroecosistema.DTO.CategoriaDTO;
+import com.miprimerspring.nuestroecosistema.dto.CategoriaDTO;
+import com.miprimerspring.nuestroecosistema.mapper.CategoriaMapper;
 import com.miprimerspring.nuestroecosistema.model.Categoria;
 import com.miprimerspring.nuestroecosistema.model.Producto;
 import com.miprimerspring.nuestroecosistema.repository.CategoriaRepository;
@@ -17,53 +18,50 @@ import java.util.stream.Collectors;
 public class CategoriaServiceImpl implements CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
+    private final CategoriaMapper categoriaMapper;
 
     @Autowired
-    public CategoriaServiceImpl(CategoriaRepository categoriaRepository) {
+    public CategoriaServiceImpl(CategoriaRepository categoriaRepository, CategoriaMapper categoriaMapper) {
         this.categoriaRepository = categoriaRepository;
+        this.categoriaMapper = categoriaMapper;
     }
 
     @Override
-    public List<Categoria> obtenerTodasLasCategorias() {
-        return categoriaRepository.findAll();
+    public CategoriaDTO crearCategoria(CategoriaDTO categoriaDTO) {
+        Categoria categoria = categoriaMapper.toEntity(categoriaDTO);
+        Categoria savedCategoria = categoriaRepository.save(categoria);
+        return categoriaMapper.toDTO(savedCategoria);
     }
 
     @Override
-    public Optional<Categoria> obtenerCategoriaPorId(Long id) {
-        return categoriaRepository.findById(id);
+    public CategoriaDTO obtenerCategoriaPorId(Long id) {
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+        return categoriaMapper.toDTO(categoria);
     }
 
     @Override
-    public Categoria crearCategoria(Categoria categoria) {
-        return categoriaRepository.save(categoria);
+    public List<CategoriaDTO> obtenerTodasCategorias() {
+        List<Categoria> categorias = categoriaRepository.findAll();
+        return categorias.stream()
+                .map(categoriaMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Categoria actualizarCategoria(Long id, Categoria categoria) {
-        if (!categoriaRepository.existsById(id)) {
-            throw new RuntimeException("Categoría no encontrada con el id: " + id);
-        }
-        categoria.setCategoriaId(id);  // Aseguramos que se actualice el ID de la categoría
-        return categoriaRepository.save(categoria);
+    public CategoriaDTO actualizarCategoria(Long id, CategoriaDTO categoriaDTO) {
+        Categoria categoriaExistente = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+        categoriaExistente = categoriaMapper.toEntity(categoriaDTO);
+        categoriaExistente.setCategoriaId(id);  // Mantener el ID
+        Categoria updatedCategoria = categoriaRepository.save(categoriaExistente);
+        return categoriaMapper.toDTO(updatedCategoria);
     }
 
     @Override
     public void eliminarCategoria(Long id) {
-        if (!categoriaRepository.existsById(id)) {
-            throw new RuntimeException("Categoría no encontrada con el id: " + id);
-        }
-        categoriaRepository.deleteById(id);
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+        categoriaRepository.delete(categoria);
     }
-
-    @Override
-    public CategoriaDTO convertirACategoriaDTO(Categoria categoria) {
-        // Convertimos la lista de productos a una lista de IDs
-        List<Long> productoIds = categoria.getProductos().stream()
-                .map(Producto::getProductoId) // Solo obtenemos los IDs de los productos
-                .collect(Collectors.toList());
-
-        // Creamos y devolvemos el DTO
-        return new CategoriaDTO(categoria.getCategoriaId(), categoria.getCategoriaNombre(), productoIds);
-    }
-
 }

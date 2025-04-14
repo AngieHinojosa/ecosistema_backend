@@ -1,7 +1,8 @@
 package com.miprimerspring.nuestroecosistema.service;
 
-import com.miprimerspring.nuestroecosistema.DTO.MensajeDTO;
-import com.miprimerspring.nuestroecosistema.DTO.UsuarioDTO;
+import com.miprimerspring.nuestroecosistema.dto.MensajeDTO;
+import com.miprimerspring.nuestroecosistema.dto.UsuarioDTO;
+import com.miprimerspring.nuestroecosistema.mapper.MensajeMapper;
 import com.miprimerspring.nuestroecosistema.model.Mensaje;
 import com.miprimerspring.nuestroecosistema.model.Usuario;
 import com.miprimerspring.nuestroecosistema.repository.MensajeRepository;
@@ -16,64 +17,75 @@ import java.util.stream.Collectors;
 @Transactional
 public class MensajeServiceImpl implements MensajeService {
 
+    private final MensajeRepository mensajeRepository;
+    private final MensajeMapper mensajeMapper;
+
     @Autowired
-    private MensajeRepository mensajeRepository;
+    public MensajeServiceImpl(MensajeRepository mensajeRepository, MensajeMapper mensajeMapper) {
+        this.mensajeRepository = mensajeRepository;
+        this.mensajeMapper = mensajeMapper;
+    }
 
     @Override
-    public List<MensajeDTO> obtenerTodosLosMensajes() {
-        return mensajeRepository.findAll().stream()
-                .map(this::convertirAMensajeDTO) // Convertir de entidad a DTO
-                .collect(Collectors.toList());
+    public MensajeDTO crearMensaje(MensajeDTO mensajeDTO) {
+        Mensaje mensaje = mensajeMapper.toEntity(mensajeDTO);
+        Mensaje savedMensaje = mensajeRepository.save(mensaje);
+        return mensajeMapper.toDTO(savedMensaje);
     }
 
     @Override
     public MensajeDTO obtenerMensajePorId(Long id) {
-        // Buscar la entidad Mensaje
-        return mensajeRepository.findById(id)
-                .map(this::convertirAMensajeDTO) // Convertir la entidad Mensaje a un DTO
-                .orElse(null);  // O puedes lanzar una excepción personalizada si lo prefieres
+        Mensaje mensaje = mensajeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mensaje no encontrado"));
+        return mensajeMapper.toDTO(mensaje);
+    }
+
+    @Override
+    public List<MensajeDTO> obtenerMensajesPorEmisorId(Integer emisorId) {
+        List<Mensaje> mensajes = mensajeRepository.findByEmisor_UsuarioId(emisorId);
+        return mensajes.stream()
+                .map(mensajeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MensajeDTO> obtenerMensajesPorReceptorId(Integer receptorId) {
+        List<Mensaje> mensajes = mensajeRepository.findByReceptor_UsuarioId(receptorId);
+        return mensajes.stream()
+                .map(mensajeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MensajeDTO> obtenerMensajesPorLeido(Boolean mensajeLeido) {
+        List<Mensaje> mensajes = mensajeRepository.findByMensajeLeido(mensajeLeido);
+        return mensajes.stream()
+                .map(mensajeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MensajeDTO> obtenerTodosMensajes() {
+        List<Mensaje> mensajes = mensajeRepository.findAll();
+        return mensajes.stream()
+                .map(mensajeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public MensajeDTO actualizarMensaje(Long id, MensajeDTO mensajeDTO) {
+        Mensaje mensajeExistente = mensajeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mensaje no encontrado"));
+        mensajeExistente = mensajeMapper.toEntity(mensajeDTO);
+        mensajeExistente.setMensajeId(id);  // Mantener el ID
+        Mensaje updatedMensaje = mensajeRepository.save(mensajeExistente);
+        return mensajeMapper.toDTO(updatedMensaje);
     }
 
     @Override
     public void eliminarMensaje(Long id) {
-        mensajeRepository.deleteById(id);
-    }
-
-    // Método para convertir Mensaje a MensajeDTO
-    public MensajeDTO convertirAMensajeDTO(Mensaje mensaje) {
-        return new MensajeDTO(mensaje);  // Convierte una entidad 'Mensaje' a un 'MensajeDTO'
-    }
-
-    // Método para convertir MensajeDTO a Mensaje (entidad)
-    public Mensaje convertirMensajeDTOaEntidad(MensajeDTO mensajeDTO) {
-        Mensaje mensaje = new Mensaje();
-        mensaje.setMensajeContenido(mensajeDTO.getMensajeContenido());
-        mensaje.setMensajeLeido(mensajeDTO.getMensajeLeido());
-        mensaje.setMensajeEnviadoEn(mensajeDTO.getMensajeEnviadoEn());
-
-        // Asegúrate de convertir los usuarios (emisor y receptor) de DTO a entidad
-        if (mensajeDTO.getEmisor() != null && mensajeDTO.getReceptor() != null) {
-            mensaje.setEmisor(convertirUsuarioDTOaEntidad(mensajeDTO.getEmisor()));  // Convertir emisor DTO a entidad
-            mensaje.setReceptor(convertirUsuarioDTOaEntidad(mensajeDTO.getReceptor()));  // Convertir receptor DTO a entidad
-        }
-
-        return mensaje;  // Retorna la entidad Mensaje
-    }
-
-    // Método para convertir UsuarioDTO a Usuario (entidad)
-    private Usuario convertirUsuarioDTOaEntidad(UsuarioDTO usuarioDTO) {
-        Usuario usuario = new Usuario();
-        usuario.setUsuarioId(usuarioDTO.getUsuarioId());
-        usuario.setUsuarioNombres(usuarioDTO.getUsuarioNombres());
-        // Asignar otros campos necesarios
-        return usuario;
-    }
-
-    public MensajeDTO crearMensaje(MensajeDTO mensajeDTO) {
-        Mensaje mensaje = convertirMensajeDTOaEntidad(mensajeDTO); // Convierte el DTO a entidad
-        mensaje = mensajeRepository.save(mensaje); // Guardar la entidad
-
-        // Convertir la entidad guardada a DTO y devolverlo
-        return convertirAMensajeDTO(mensaje);
+        Mensaje mensaje = mensajeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mensaje no encontrado"));
+        mensajeRepository.delete(mensaje);
     }
 }

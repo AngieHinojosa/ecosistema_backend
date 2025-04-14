@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.api;
 
+import com.miprimerspring.nuestroecosistema.dto.PuntosFidelizacionDTO;
 import com.miprimerspring.nuestroecosistema.model.PuntosFidelizacion;
 import com.miprimerspring.nuestroecosistema.service.PuntosFidelizacionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,33 +14,52 @@ import java.util.List;
 @RequestMapping("/puntos_fidelizacion")
 public class PuntosFidelizacionRestController {
 
-    //Obtener puntos, actualizar puntos.
+    private final PuntosFidelizacionService puntosFidelizacionService;
+
     @Autowired
-    private PuntosFidelizacionService puntosFidelizacionService;
-
-    @GetMapping("/lista")
-    public ResponseEntity<List<PuntosFidelizacion>> listar() {
-        return ResponseEntity.ok(puntosFidelizacionService.obtenerTodosLosPuntos());
+    public PuntosFidelizacionRestController(PuntosFidelizacionService puntosFidelizacionService) {
+        this.puntosFidelizacionService = puntosFidelizacionService;
     }
 
+    // Obtener todos los puntos de fidelización
+    @GetMapping("/todos")
+    public ResponseEntity<List<PuntosFidelizacionDTO>> obtenerTodosPuntos() {
+        List<PuntosFidelizacionDTO> puntos = puntosFidelizacionService.obtenerTodosPuntosFidelizacion();
+        return ResponseEntity.ok(puntos);
+    }
+
+    // Obtener un punto de fidelización por ID
     @GetMapping("/{id}")
-    public ResponseEntity<PuntosFidelizacion> obtener(@PathVariable Long id) {
-        return ResponseEntity.ok(puntosFidelizacionService.obtenerPuntosPorId(id));
+    public ResponseEntity<PuntosFidelizacionDTO> obtenerPuntoPorId(@PathVariable("id") Long id) {
+        PuntosFidelizacionDTO punto = puntosFidelizacionService.obtenerPuntoFidelizacionPorId(id);
+        return punto != null ? ResponseEntity.ok(punto) : ResponseEntity.notFound().build();
     }
 
+    // Obtener puntos de fidelización por usuario
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<PuntosFidelizacionDTO>> obtenerPuntosPorUsuario(@PathVariable("usuarioId") Integer usuarioId) {
+        List<PuntosFidelizacionDTO> puntos = puntosFidelizacionService.obtenerPuntosPorUsuario(usuarioId);
+        return ResponseEntity.ok(puntos);
+    }
+
+    // Crear un nuevo punto de fidelización
     @PostMapping("/nuevo")
-    public ResponseEntity<PuntosFidelizacion> crear(@RequestBody PuntosFidelizacion obj) {
-        return new ResponseEntity<>(puntosFidelizacionService.crearPuntos(obj), HttpStatus.CREATED);
+    public ResponseEntity<PuntosFidelizacionDTO> crearPuntoFidelizacion(@RequestBody PuntosFidelizacionDTO puntosFidelizacionDTO) {
+        PuntosFidelizacionDTO creado = puntosFidelizacionService.crearPuntoFidelizacion(puntosFidelizacionDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<PuntosFidelizacion> actualizar(@PathVariable Long id, @RequestBody PuntosFidelizacion obj) {
-        return ResponseEntity.ok(puntosFidelizacionService.actualizarPuntos(id, obj));
+    // Actualizar un punto de fidelización
+    @PutMapping("/{id}")
+    public ResponseEntity<PuntosFidelizacionDTO> actualizarPuntoFidelizacion(@PathVariable("id") Long id, @RequestBody PuntosFidelizacionDTO puntosFidelizacionDTO) {
+        PuntosFidelizacionDTO actualizado = puntosFidelizacionService.actualizarPuntoFidelizacion(id, puntosFidelizacionDTO);
+        return ResponseEntity.ok(actualizado);
     }
 
-    @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        puntosFidelizacionService.eliminarPuntos(id);
+    // Eliminar un punto de fidelización
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarPuntoFidelizacion(@PathVariable("id") Long id) {
+        puntosFidelizacionService.eliminarPuntoFidelizacion(id);
         return ResponseEntity.noContent().build();
     }
 }

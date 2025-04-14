@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.api;
 
+import com.miprimerspring.nuestroecosistema.dto.LogsActividadDTO;
 import com.miprimerspring.nuestroecosistema.model.LogsActividad;
 import com.miprimerspring.nuestroecosistema.service.LogsActividadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,38 +14,52 @@ import java.util.List;
 @RequestMapping("/logs-actividad")
 public class LogsActividadRestController {
 
+    private final LogsActividadService logsActividadService;
+
     @Autowired
-    private LogsActividadService logsActividadService;
-
-    // Obtener todos los logs de actividad
-    @GetMapping("/lista")
-    public ResponseEntity<List<LogsActividad>> listar() {
-        List<LogsActividad> logs = logsActividadService.obtenerTodosLosLogs();
-        return ResponseEntity.ok(logs);
+    public LogsActividadRestController(LogsActividadService logsActividadService) {
+        this.logsActividadService = logsActividadService;
     }
 
-    // Obtener un log de actividad por su ID
-    @GetMapping("/{id}")
-    public ResponseEntity<LogsActividad> obtener(@PathVariable Long id) {
-        LogsActividad log = logsActividadService.obtenerLogPorId(id);
-        if (log != null) {
-            return ResponseEntity.ok(log);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    // Crear un nuevo log de actividad
     @PostMapping("/nuevo")
-    public ResponseEntity<LogsActividad> crear(@RequestBody LogsActividad logsActividad) {
-        LogsActividad nuevoLog = logsActividadService.crearLogActividad(logsActividad);
-        return new ResponseEntity<>(nuevoLog, HttpStatus.CREATED);
+    public ResponseEntity<LogsActividadDTO> crearLogActividad(@RequestBody LogsActividadDTO logsActividadDTO) {
+        LogsActividadDTO createdLogsActividad = logsActividadService.crearLogActividad(logsActividadDTO);
+        return new ResponseEntity<>(createdLogsActividad, HttpStatus.CREATED);
     }
 
-    // Eliminar un log de actividad
-    @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<LogsActividadDTO> obtenerLogActividad(@PathVariable Long id) {
+        LogsActividadDTO logsActividadDTO = logsActividadService.obtenerLogActividadPorId(id);
+        return new ResponseEntity<>(logsActividadDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<LogsActividadDTO>> obtenerLogsPorUsuarioId(@PathVariable Integer usuarioId) {
+        List<LogsActividadDTO> logs = logsActividadService.obtenerLogsPorUsuarioId(usuarioId);
+        return new ResponseEntity<>(logs, HttpStatus.OK);
+    }
+
+    @GetMapping("/accion")
+    public ResponseEntity<List<LogsActividadDTO>> obtenerLogsPorAccion(@RequestParam String logAccion) {
+        List<LogsActividadDTO> logs = logsActividadService.obtenerLogsPorAccion(logAccion);
+        return new ResponseEntity<>(logs, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<LogsActividadDTO>> obtenerTodosLogs() {
+        List<LogsActividadDTO> logs = logsActividadService.obtenerTodosLogs();
+        return new ResponseEntity<>(logs, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<LogsActividadDTO> actualizarLogActividad(@PathVariable Long id, @RequestBody LogsActividadDTO logsActividadDTO) {
+        LogsActividadDTO updatedLogsActividad = logsActividadService.actualizarLogActividad(id, logsActividadDTO);
+        return new ResponseEntity<>(updatedLogsActividad, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarLogActividad(@PathVariable Long id) {
         logsActividadService.eliminarLogActividad(id);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

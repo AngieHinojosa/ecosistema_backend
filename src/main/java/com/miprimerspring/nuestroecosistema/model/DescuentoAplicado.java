@@ -1,85 +1,31 @@
 package com.miprimerspring.nuestroecosistema.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "descuentos_aplicados")
 public class DescuentoAplicado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long descuentoAplicadoId;
+    @Column(name = "descuento_aplicado_id")
+    private Long descuentoAplicadoId;
 
-    private Double descuentoMonto;
-    private String descuentoCodigo;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pedido_id", nullable = false)
     private Pedido pedido;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "descuento_id", nullable = false)
-    private DescuentosExternos descuento;
+    private DescuentosExternos descuentosExternos;
 
-    public DescuentoAplicado() {
-    }
+    @Column(name = "descuento_monto")
+    private Double descuentoMonto;
 
-    public DescuentoAplicado(long descuentoAplicadoId, Double descuentoMonto, String descuentoCodigo, Pedido pedido, DescuentosExternos descuento) {
-        this.descuentoAplicadoId = descuentoAplicadoId;
-        this.descuentoMonto = descuentoMonto;
-        this.descuentoCodigo = descuentoCodigo;
-        this.pedido = pedido;
-        this.descuento = descuento;
-    }
-
-    public long getDescuentoAplicadoId() {
-        return descuentoAplicadoId;
-    }
-
-    public void setDescuentoAplicadoId(long descuentoAplicadoId) {
-        this.descuentoAplicadoId = descuentoAplicadoId;
-    }
-
-    public Double getDescuentoMonto() {
-        return descuentoMonto;
-    }
-
-    public void setDescuentoMonto(Double descuentoMonto) {
-        this.descuentoMonto = descuentoMonto;
-    }
-
-    public String getDescuentoCodigo() {
-        return descuentoCodigo;
-    }
-
-    public void setDescuentoCodigo(String descuentoCodigo) {
-        this.descuentoCodigo = descuentoCodigo;
-    }
-
-    public Pedido getPedido() {
-        return pedido;
-    }
-
-    public void setPedido(Pedido pedido) {
-        this.pedido = pedido;
-    }
-
-    public DescuentosExternos getDescuento() {
-        return descuento;
-    }
-
-    public void setDescuento(DescuentosExternos descuento) {
-        this.descuento = descuento;
-    }
-
-    @Override
-    public String toString() {
-        return "DescuentoAplicado{" +
-                "descuentoAplicadoId=" + descuentoAplicadoId +
-                ", descuentoMonto=" + descuentoMonto +
-                ", descuentoCodigo='" + descuentoCodigo + '\'' +
-                ", pedido=" + pedido +
-                ", descuento=" + descuento +
-                '}';
-    }
+    @Column(name = "descuento_codigo", length = 255)
+    private String descuentoCodigo;
 }
