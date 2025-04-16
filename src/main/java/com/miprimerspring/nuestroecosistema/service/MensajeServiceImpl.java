@@ -1,10 +1,8 @@
 package com.miprimerspring.nuestroecosistema.service;
 
 import com.miprimerspring.nuestroecosistema.dto.MensajeDTO;
-import com.miprimerspring.nuestroecosistema.dto.UsuarioDTO;
 import com.miprimerspring.nuestroecosistema.mapper.MensajeMapper;
 import com.miprimerspring.nuestroecosistema.model.Mensaje;
-import com.miprimerspring.nuestroecosistema.model.Usuario;
 import com.miprimerspring.nuestroecosistema.repository.MensajeRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

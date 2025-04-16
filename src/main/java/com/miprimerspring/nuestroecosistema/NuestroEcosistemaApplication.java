@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class NuestroEcosistemaApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(NuestroEcosistemaApplication.class, args);
     }
 

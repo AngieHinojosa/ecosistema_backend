@@ -1,15 +1,13 @@
 package com.miprimerspring.nuestroecosistema.service;
 
-import com.miprimerspring.nuestroecosistema.dto.UsuarioDTO;
-import com.miprimerspring.nuestroecosistema.mapper.UsuarioMapper;
-import com.miprimerspring.nuestroecosistema.model.Rol;
+import com.miprimerspring.nuestroecosistema.model.ERol;
 import com.miprimerspring.nuestroecosistema.model.Usuario;
-import com.miprimerspring.nuestroecosistema.repository.RolRepository;
 import com.miprimerspring.nuestroecosistema.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,77 +16,57 @@ import java.util.stream.Collectors;
 @Transactional
 public class UsuarioServiceImpl implements UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
-    private final UsuarioMapper usuarioMapper;
-    private final RolRepository rolRepository;
-
     @Autowired
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, RolRepository rolRepository) {
-        this.usuarioRepository = usuarioRepository;
-        this.usuarioMapper = usuarioMapper;
-        this.rolRepository = rolRepository;
+    private UsuarioRepository usuarioRepository;
+
+    @Override
+    public Usuario crearUsuario(Usuario usuario) {
+        return usuarioRepository.save(usuario);
     }
 
     @Override
-    public UsuarioDTO crearUsuario(UsuarioDTO usuarioDTO) {
-        // Obtener el rol usando el rolId desde el DTO
-        Rol rol = rolRepository.findById(Math.toIntExact(usuarioDTO.getRolId())).orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-
-        // Pasamos tanto el UsuarioDTO como el Rol al método toEntity
-        Usuario usuario = usuarioMapper.toEntity(usuarioDTO, rol);
-
-        // Guardamos el usuario y retornamos el DTO
-        usuario = usuarioRepository.save(usuario);
-        return usuarioMapper.toDTO(usuario);
+    public Optional<Usuario> obtenerUsuarioPorId(Long id) {
+        return usuarioRepository.findById(id);
     }
 
     @Override
-    public UsuarioDTO obtenerUsuarioPorId(Long id) {
-        return usuarioRepository.findById(id)
-                .map(usuarioMapper::toDTO)
-                .orElse(null);
+    public Optional<Usuario> obtenerUsuarioPorCorreo(String correo) {
+        return usuarioRepository.findByUsuarioCorreo(correo);
     }
 
     @Override
-    public UsuarioDTO obtenerUsuarioPorCorreo(String correo) {
-        Usuario usuario = usuarioRepository.findByCorreo(correo);
-        return usuario != null ? usuarioMapper.toDTO(usuario) : null;
+    public boolean existeUsuarioPorCorreo(String correo) {
+        return usuarioRepository.existsByUsuarioCorreo(correo);
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUsuariosPorEstado(String estado) {
-        List<Usuario> usuarios = usuarioRepository.findByEstado(estado);
-        return usuarios.stream().map(usuarioMapper::toDTO).collect(Collectors.toList());
+    public List<Usuario> obtenerUsuariosPorEstado(String estado) {
+        return usuarioRepository.findByEstado(estado);
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUsuariosPorRolId(Integer rolId) {
-        List<Usuario> usuarios = usuarioRepository.findByRolId(Long.valueOf(rolId));
-        return usuarios.stream().map(usuarioMapper::toDTO).collect(Collectors.toList());
+    public List<Usuario> obtenerUsuariosPorRol(ERol rol) {  // Usamos ERol en lugar de rolId
+        return usuarioRepository.findByRol(rol);  // Ajustamos a la consulta que ahora usa ERol
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUsuariosPorVendedor(Boolean vendedor) {
-        List<Usuario> usuarios = usuarioRepository.findByVendedor(vendedor);
-        return usuarios.stream().map(usuarioMapper::toDTO).collect(Collectors.toList());
+    public List<Usuario> obtenerUsuariosPorVendedor(Boolean vendedor) {
+        return usuarioRepository.findByVendedor(vendedor);
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUsuariosPorTipoDocumento(String tipoDocumento) {
-        List<Usuario> usuarios = usuarioRepository.findByTipoDocumento(tipoDocumento);
-        return usuarios.stream().map(usuarioMapper::toDTO).collect(Collectors.toList());
+    public List<Usuario> obtenerUsuariosPorTipoDocumento(String tipoDocumento) {
+        return usuarioRepository.findByTipoDocumento(tipoDocumento);
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUsuariosPorNumeroDocumento(String numeroDocumento) {
-        List<Usuario> usuarios = usuarioRepository.findByNumeroDocumento(numeroDocumento);
-        return usuarios.stream().map(usuarioMapper::toDTO).collect(Collectors.toList());
+    public List<Usuario> obtenerUsuariosPorNumeroDocumento(String numeroDocumento) {
+        return usuarioRepository.findByNumeroDocumento(numeroDocumento);
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUsuariosPorFechaNacimiento(String fechaNacimiento) {
-        List<Usuario> usuarios = usuarioRepository.findByFechaNacimiento(fechaNacimiento);
-        return usuarios.stream().map(usuarioMapper::toDTO).collect(Collectors.toList());
+    public List<Usuario> obtenerUsuariosPorFechaNacimiento(LocalDate fechaNacimiento) {
+        return usuarioRepository.findByFechaNacimiento(fechaNacimiento);
     }
 
     @Override

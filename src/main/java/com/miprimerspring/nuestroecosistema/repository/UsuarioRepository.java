@@ -1,34 +1,40 @@
 package com.miprimerspring.nuestroecosistema.repository;
 
+import com.miprimerspring.nuestroecosistema.model.ERol;
 import com.miprimerspring.nuestroecosistema.model.Usuario;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario,Long> {
 
     @Query("SELECT u FROM Usuario u WHERE u.usuarioCorreo = :correo")
-    Usuario findByCorreo(@Param("correo") String correo);
+    Optional<Usuario> findByUsuarioCorreo(String correo);
 
     @Query("SELECT u FROM Usuario u WHERE u.usuarioEstado = :estado")
-    List<Usuario> findByEstado(@Param("estado") String estado);
+    List<Usuario> findByEstado(String estado);
 
-    @Query("SELECT u FROM Usuario u WHERE u.rol.rolId = :rolId")
-    List<Usuario> findByRolId(@Param("rolId") Long rolId);
+    @Query("SELECT u FROM Usuario u WHERE :rol MEMBER OF u.roles")  // Usamos el enum ERol
+    List<Usuario> findByRol(ERol rol);
 
     @Query("SELECT u FROM Usuario u WHERE u.usuarioVendedor = :vendedor")
-    List<Usuario> findByVendedor(@Param("vendedor") Boolean vendedor);
+    List<Usuario> findByVendedor(Boolean vendedor);
 
     @Query("SELECT u FROM Usuario u WHERE u.usuarioTipoDocumento = :tipoDocumento")
-    List<Usuario> findByTipoDocumento(@Param("tipoDocumento") String tipoDocumento);
+    List<Usuario> findByTipoDocumento(String tipoDocumento);
 
     @Query("SELECT u FROM Usuario u WHERE u.usuarioNumeroDocumento = :numeroDocumento")
-    List<Usuario> findByNumeroDocumento(@Param("numeroDocumento") String numeroDocumento);
+    List<Usuario> findByNumeroDocumento(String numeroDocumento);
 
     @Query("SELECT u FROM Usuario u WHERE u.usuarioFechaNacimiento = :fechaNacimiento")
-    List<Usuario> findByFechaNacimiento(@Param("fechaNacimiento") String fechaNacimiento);
+    List<Usuario> findByFechaNacimiento(LocalDate fechaNacimiento);
+
+    boolean existsByUsuarioCorreo(String correo);
 }
