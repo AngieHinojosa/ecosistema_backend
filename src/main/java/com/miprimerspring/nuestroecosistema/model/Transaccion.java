@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -34,4 +35,11 @@ public class Transaccion {
 
     @Column(name = "transaccion_fecha", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp transaccionFecha;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.transaccionFecha == null) {
+            this.transaccionFecha = Timestamp.valueOf(LocalDateTime.now());
+        }
+    }
 }

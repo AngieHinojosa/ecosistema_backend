@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.repository;
 
+import com.miprimerspring.nuestroecosistema.model.EstadoPedido;
 import com.miprimerspring.nuestroecosistema.model.Pedido;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,9 +15,8 @@ import java.util.List;
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido,Long>, JpaSpecificationExecutor<Pedido> {
 
-    // Consulta simple con JPQL
     @Query("SELECT p FROM Pedido p WHERE p.pedidoEstado = :estado")
-    List<Pedido> buscarPorEstado(@Param("estado") String estado);
+    List<Pedido> findByEstado(@Param("estado") EstadoPedido estado);
 
     // Métodos derivados
     List<Pedido> findByUsuario_UsuarioId(Integer usuarioId);

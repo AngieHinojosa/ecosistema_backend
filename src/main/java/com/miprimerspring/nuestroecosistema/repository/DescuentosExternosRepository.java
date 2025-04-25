@@ -9,23 +9,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DescuentosExternosRepository extends JpaRepository<DescuentosExternos, Integer>, JpaSpecificationExecutor<DescuentosExternos> {
 
-    // Consulta simple con JPQL
-    @Query("SELECT d FROM DescuentosExternos d WHERE d.descuentoCodigo = :codigo")
-    List<DescuentosExternos> buscarPorCodigo(@Param("codigo") String codigo);
-
-    // Métodos derivados
-    List<DescuentosExternos> findByDescuentoActivo(Boolean descuentoActivo);
-
-    // Especificaciones básicas
-    static Specification<DescuentosExternos> porCodigo(String codigo) {
-        return (root, query, cb) -> cb.equal(root.get("descuentoCodigo"), codigo);
-    }
-
-    static Specification<DescuentosExternos> porDescuentoActivo(Boolean descuentoActivo) {
-        return (root, query, cb) -> cb.equal(root.get("descuentoActivo"), descuentoActivo);
-    }
 }

@@ -15,17 +15,18 @@ public class DescuentoAplicado {
     @Column(name = "descuento_aplicado_id")
     private Long descuentoAplicadoId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pedido_id", nullable = false)
     private Pedido pedido;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "descuento_id", nullable = false)
-    private DescuentosExternos descuentosExternos;
+    @Column(name = "descripcion", length = 255)
+    private String descripcion;
 
-    @Column(name = "descuento_monto")
-    private Double descuentoMonto;
+    @Column(name = "porcentaje_descuento", nullable = false)
+    private Double porcentajeDescuento;
 
-    @Column(name = "descuento_codigo", length = 255)
+    @Column(name = "descuento_aplicado_total", nullable = false)
+    private Double descuentoAplicadoTotal;
+
     private String descuentoCodigo;
 }

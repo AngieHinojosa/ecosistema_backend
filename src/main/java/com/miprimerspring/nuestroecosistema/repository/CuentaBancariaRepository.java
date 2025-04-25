@@ -9,17 +9,21 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CuentaBancariaRepository  extends JpaRepository<CuentaBancaria, Long>, JpaSpecificationExecutor<CuentaBancaria> {
 
-    // Buscar por número exacto
+    // Verificar si existe una cuenta con el número dado
+    boolean existsByCuentaNumero(String cuentaNumero);
+
+    // Buscar por número exacto (versión con Optional)
     @Query("SELECT c FROM CuentaBancaria c WHERE c.cuentaNumero = :numero")
-    CuentaBancaria findByCuentaNumero(@Param("numero") String numero);
+    Optional<CuentaBancaria> findByCuentaNumero(@Param("numero") String numero);
 
     // Buscar todas las cuentas de un usuario
     @Query("SELECT c FROM CuentaBancaria c WHERE c.usuario.usuarioId = :usuarioId")
-    List<CuentaBancaria> findByUsuarioId(@Param("usuarioId") Integer usuarioId);
+    List<CuentaBancaria> findByUsuarioId(@Param("usuarioId") Long usuarioId);
 
     // Especificación: por ID de usuario
     static Specification<CuentaBancaria> usuarioIdEquals(Integer usuarioId) {

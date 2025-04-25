@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -33,11 +34,31 @@ public class TransaccionServiceImpl implements TransaccionService {
     }
 
     @Override
-    public TransaccionDTO crearTransaccion(TransaccionDTO transaccionDTO) {
+    public TransaccionDTO crearTransaccion(TransaccionDTO transaccionDTO) throws Exception {
         // Buscar las cuentas necesarias antes de mapear
-        CuentaBancaria cuenta = cuentaBancariaRepository.findById(transaccionDTO.getCuentaId()).orElse(null);
-        CuentaBancaria transaccionOrigen = cuentaBancariaRepository.findById(transaccionDTO.getTransaccionOrigenId()).orElse(null);
-        CuentaBancaria transaccionDestino = cuentaBancariaRepository.findById(transaccionDTO.getTransaccionDestinoId()).orElse(null);
+        CuentaBancaria cuenta = cuentaBancariaRepository.findById(transaccionDTO.getCuentaId())
+                .orElseThrow(() -> new Exception("Cuenta no encontrada"));
+
+        CuentaBancaria transaccionOrigen = cuentaBancariaRepository.findById(transaccionDTO.getTransaccionOrigenId())
+                .orElseThrow(() -> new Exception("Cuenta origen no encontrada"));
+
+        CuentaBancaria transaccionDestino = cuentaBancariaRepository.findById(transaccionDTO.getTransaccionDestinoId())
+                .orElseThrow(() -> new Exception("Cuenta destino no encontrada"));
+
+        // Validar el saldo de la cuenta origen (para evitar sobregiros)
+        if (transaccionDTO.getTransaccionMonto() > transaccionOrigen.getCuentaSaldo().doubleValue()) {
+            throw new Exception("Saldo insuficiente en la cuenta origen");
+        }
+
+        // Restar monto de la cuenta origen
+        transaccionOrigen.setCuentaSaldo(transaccionOrigen.getCuentaSaldo().subtract(BigDecimal.valueOf(transaccionDTO.getTransaccionMonto())));
+
+        // Sumar monto a la cuenta destino
+        transaccionDestino.setCuentaSaldo(transaccionDestino.getCuentaSaldo().add(BigDecimal.valueOf(transaccionDTO.getTransaccionMonto())));
+
+        // Guardar las cuentas actualizadas
+        cuentaBancariaRepository.save(transaccionOrigen);
+        cuentaBancariaRepository.save(transaccionDestino);
 
         // Mapear el DTO a entidad (sin cuentas aún)
         Transaccion transaccion = transaccionMapper.toEntity(transaccionDTO);

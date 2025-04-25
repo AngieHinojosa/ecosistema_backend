@@ -15,52 +15,36 @@ import java.util.List;
 @RequestMapping("/descuentos-aplicados")
 public class DescuentoAplicadoRestController {
 
-    private final DescuentoAplicadoService descuentoAplicadoService;
-
     @Autowired
-    public DescuentoAplicadoRestController(DescuentoAplicadoService descuentoAplicadoService) {
-        this.descuentoAplicadoService = descuentoAplicadoService;
-    }
+    private DescuentoAplicadoService descuentoAplicadoService;
 
-    @PostMapping("/nuevo")
-    public ResponseEntity<DescuentoAplicadoDTO> crearDescuentoAplicado(@RequestBody DescuentoAplicadoDTO descuentoAplicadoDTO) {
-        DescuentoAplicadoDTO createdDescuentoAplicado = descuentoAplicadoService.crearDescuentoAplicado(descuentoAplicadoDTO);
-        return new ResponseEntity<>(createdDescuentoAplicado, HttpStatus.CREATED);
+    @GetMapping
+    public ResponseEntity<List<DescuentoAplicadoDTO>> obtenerDescuentosAplicados() {
+        List<DescuentoAplicadoDTO> descuentos = descuentoAplicadoService.obtenerDescuentosAplicados();
+        return ResponseEntity.ok(descuentos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<DescuentoAplicadoDTO> obtenerDescuentoAplicado(@PathVariable Long id) {
-        DescuentoAplicadoDTO descuentoAplicadoDTO = descuentoAplicadoService.obtenerDescuentoAplicadoPorId(id);
-        return new ResponseEntity<>(descuentoAplicadoDTO, HttpStatus.OK);
+        DescuentoAplicadoDTO descuento = descuentoAplicadoService.obtenerDescuentoAplicadoPorId(id);
+        return descuento != null ? ResponseEntity.ok(descuento) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/pedido/{pedidoId}")
-    public ResponseEntity<List<DescuentoAplicadoDTO>> obtenerDescuentosPorPedido(@PathVariable Integer pedidoId) {
-        List<DescuentoAplicadoDTO> descuentos = descuentoAplicadoService.obtenerDescuentosPorPedido(pedidoId);
-        return new ResponseEntity<>(descuentos, HttpStatus.OK);
-    }
-
-    @GetMapping("/descuento/{descuentoId}")
-    public ResponseEntity<List<DescuentoAplicadoDTO>> obtenerDescuentosPorDescuento(@PathVariable Integer descuentoId) {
-        List<DescuentoAplicadoDTO> descuentos = descuentoAplicadoService.obtenerDescuentosPorDescuento(descuentoId);
-        return new ResponseEntity<>(descuentos, HttpStatus.OK);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<DescuentoAplicadoDTO>> obtenerTodosDescuentosAplicados() {
-        List<DescuentoAplicadoDTO> descuentos = descuentoAplicadoService.obtenerTodosDescuentosAplicados();
-        return new ResponseEntity<>(descuentos, HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<DescuentoAplicadoDTO> crearDescuentoAplicado(@RequestBody DescuentoAplicadoDTO descuentoAplicadoDTO) {
+        DescuentoAplicadoDTO descuentoCreado = descuentoAplicadoService.crearDescuentoAplicado(descuentoAplicadoDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(descuentoCreado);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<DescuentoAplicadoDTO> actualizarDescuentoAplicado(@PathVariable Long id, @RequestBody DescuentoAplicadoDTO descuentoAplicadoDTO) {
-        DescuentoAplicadoDTO updatedDescuentoAplicado = descuentoAplicadoService.actualizarDescuentoAplicado(id, descuentoAplicadoDTO);
-        return new ResponseEntity<>(updatedDescuentoAplicado, HttpStatus.OK);
+        DescuentoAplicadoDTO descuentoActualizado = descuentoAplicadoService.actualizarDescuentoAplicado(id, descuentoAplicadoDTO);
+        return descuentoActualizado != null ? ResponseEntity.ok(descuentoActualizado) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarDescuentoAplicado(@PathVariable Long id) {
         descuentoAplicadoService.eliminarDescuentoAplicado(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 }

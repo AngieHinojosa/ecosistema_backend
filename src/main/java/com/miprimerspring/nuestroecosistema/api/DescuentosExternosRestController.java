@@ -14,46 +14,36 @@ import java.util.List;
 @RequestMapping("/descuentos-externos")
 public class DescuentosExternosRestController {
 
-    private final DescuentosExternosService descuentosExternosService;
-
     @Autowired
-    public DescuentosExternosRestController(DescuentosExternosService descuentosExternosService) {
-        this.descuentosExternosService = descuentosExternosService;
-    }
+    private DescuentosExternosService descuentosExternosService;
 
-    @PostMapping("/nuevo")
-    public ResponseEntity<DescuentoExternoDTO> crearDescuentoExterno(@RequestBody DescuentoExternoDTO descuentoExternoDTO) {
-        DescuentoExternoDTO createdDescuentoExterno = descuentosExternosService.crearDescuentoExterno(descuentoExternoDTO);
-        return new ResponseEntity<>(createdDescuentoExterno, HttpStatus.CREATED);
+    @GetMapping
+    public ResponseEntity<List<DescuentoExternoDTO>> obtenerDescuentosExternos() {
+        List<DescuentoExternoDTO> descuentos = descuentosExternosService.obtenerDescuentosExternos();
+        return ResponseEntity.ok(descuentos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DescuentoExternoDTO> obtenerDescuentoExterno(@PathVariable Integer id) {
-        DescuentoExternoDTO descuentoExternoDTO = descuentosExternosService.obtenerDescuentoExternoPorId(id);
-        return new ResponseEntity<>(descuentoExternoDTO, HttpStatus.OK);
+    public ResponseEntity<DescuentoExternoDTO> obtenerDescuentoExterno(@PathVariable Long id) {
+        DescuentoExternoDTO descuento = descuentosExternosService.obtenerDescuentoExternoPorId(id);
+        return descuento != null ? ResponseEntity.ok(descuento) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/activos")
-    public ResponseEntity<List<DescuentoExternoDTO>> obtenerDescuentosActivos(@RequestParam Boolean descuentoActivo) {
-        List<DescuentoExternoDTO> descuentos = descuentosExternosService.obtenerDescuentosActivos(descuentoActivo);
-        return new ResponseEntity<>(descuentos, HttpStatus.OK);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<DescuentoExternoDTO>> obtenerTodosDescuentosExternos() {
-        List<DescuentoExternoDTO> descuentos = descuentosExternosService.obtenerTodosDescuentosExternos();
-        return new ResponseEntity<>(descuentos, HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<DescuentoExternoDTO> crearDescuentoExterno(@RequestBody DescuentoExternoDTO descuentoExternoDTO) {
+        DescuentoExternoDTO descuentoCreado = descuentosExternosService.crearDescuentoExterno(descuentoExternoDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(descuentoCreado);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DescuentoExternoDTO> actualizarDescuentoExterno(@PathVariable Integer id, @RequestBody DescuentoExternoDTO descuentoExternoDTO) {
-        DescuentoExternoDTO updatedDescuentoExterno = descuentosExternosService.actualizarDescuentoExterno(id, descuentoExternoDTO);
-        return new ResponseEntity<>(updatedDescuentoExterno, HttpStatus.OK);
+    public ResponseEntity<DescuentoExternoDTO> actualizarDescuentoExterno(@PathVariable Long id, @RequestBody DescuentoExternoDTO descuentoExternoDTO) {
+        DescuentoExternoDTO descuentoActualizado = descuentosExternosService.actualizarDescuentoExterno(id, descuentoExternoDTO);
+        return descuentoActualizado != null ? ResponseEntity.ok(descuentoActualizado) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarDescuentoExterno(@PathVariable Integer id) {
+    public ResponseEntity<Void> eliminarDescuentoExterno(@PathVariable Long id) {
         descuentosExternosService.eliminarDescuentoExterno(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.config;
 
+import com.google.cloud.storage.HttpMethod;
 import com.miprimerspring.nuestroecosistema.security.AuthEntryPointJwt;
 import com.miprimerspring.nuestroecosistema.security.AuthTokenFilter;
 import com.miprimerspring.nuestroecosistema.security.JwtUtils;
@@ -17,6 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableMethodSecurity
@@ -56,12 +60,26 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.addAllowedOrigin("*");  // Permite todas las URLs de origen, puedes restringirlo a un dominio específico
+        corsConfig.addAllowedMethod("*");  // Permite todos los métodos HTTP
+        corsConfig.addAllowedHeader("*");  // Permite todos los encabezados
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);  // Configura CORS para todas las rutas
+
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .exceptionHandling(e -> e.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // Configuración de las rutas públicas (Swagger y otras)
                 .authorizeHttpRequests(auth -> auth
-                        // Rutas de Swagger permitidas sin autenticación
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
@@ -73,22 +91,64 @@ public class WebSecurityConfig {
                                 "/configuration/security"
                         ).permitAll()
 
-                        // Otras rutas permitidas sin autenticación
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll() // Rutas de autenticación pública
                         .requestMatchers("/", "/index.html").permitAll()
                         .requestMatchers("/roles/nuevo").permitAll()
                         .requestMatchers("/error").permitAll()
 
                         // Rutas protegidas por roles
-                        .requestMatchers("/api/producto/nuevo").hasRole("ADMIN")
-                        .requestMatchers("/api/producto/lista").hasAnyRole("USER", "ADMIN")
+                        // Producto
+                        .requestMatchers("/producto/nuevo").hasAnyRole("VENDEDOR", "ADMIN") // Vendedores y Admin pueden crear productos
+                        .requestMatchers("/producto/lista").hasAnyRole("USER", "ADMIN", "VENDEDOR") // Todos pueden ver productos
+                        .requestMatchers("/producto/{id}").hasAnyRole("USER", "ADMIN", "VENDEDOR") // Todos pueden obtener productos por ID
+                        .requestMatchers("/producto/estado/**").hasAnyRole("USER", "ADMIN", "VENDEDOR")
+                        .requestMatchers("/producto/nombre/**").hasAnyRole("USER", "ADMIN", "VENDEDOR")
+                        .requestMatchers("/producto/categoria/**").hasAnyRole("USER", "ADMIN", "VENDEDOR")
+                        .requestMatchers("/producto/eliminar/**").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers("/producto/actualizar/**").hasAnyRole("ADMIN", "VENDEDOR")
+
+                        // Carrito
+                        .requestMatchers("/carritos/nuevo").hasRole("USER") // Solo usuarios autenticados pueden crear carritos
+                        .requestMatchers("/carritos/usuario/**").hasRole("USER") // Obtener carritos por usuario (puede ser el mismo usuario)
+                        .requestMatchers("/carritos/{id}").hasRole("USER") // Obtener carrito por id (ya haces validación dentro del método)
+                        .requestMatchers("/carritos/{id}/**").hasRole("USER") // Operaciones dentro de un carrito: agregar producto, pagar, eliminar, etc.
+                        .requestMatchers("/carritos").hasRole("ADMIN") // Solo el admin puede ver todos los carritos
+
+                        // Categoría
+                        .requestMatchers("/categorias/nuevo").hasRole("ADMIN") // Solo ADMIN puede crear categorías
+                        .requestMatchers("/categorias").hasAnyRole("USER", "ADMIN") // Todos los usuarios pueden ver categorías
+                        .requestMatchers("/categorias/{id}").hasAnyRole("USER", "ADMIN") // Todos los usuarios pueden ver una categoría por id
+                        .requestMatchers("/categorias/{id}/editar").hasRole("ADMIN") // Solo ADMIN puede editar categorías
+                        .requestMatchers("/categorias/{id}/eliminar").hasRole("ADMIN") // Solo ADMIN puede eliminar categorías
+
+                        // Rutas de usuario (modificar según lo que tengas en UsuarioRestController)
+                        .requestMatchers("/usuarios/registro").permitAll() // El registro está abierto a todos
+                        .requestMatchers("/usuarios/{id}").hasRole("USER") // Solo el usuario o ADMIN puede ver la información del usuario
+                        .requestMatchers("/usuarios/rol/{rol}").hasRole("ADMIN") // Solo ADMIN puede listar usuarios por rol
+                        .requestMatchers("/usuarios/eliminar/{id}").hasRole("ADMIN") // Solo ADMIN puede eliminar usuarios
+
+                        // Pedido
+                        .requestMatchers("/pedido/nuevo").hasRole("USER") // Crear pedidos: cualquier usuario registrado
+                        .requestMatchers("/pedido/todos").hasRole("ADMIN") // Solo admin puede ver todos los pedidos
+                        .requestMatchers("/pedido/estado/**").hasAnyRole("ADMIN", "VENDEDOR") // Admin y vendedores pueden ver pedidos por estado
+                        .requestMatchers("/pedido/fecha/**").hasAnyRole("ADMIN", "VENDEDOR") // Admin y vendedores pueden ver pedidos por fecha
+                        .requestMatchers("/pedido/usuario/**").hasRole("USER") // Usuarios pueden ver sus propios pedidos
+                        .requestMatchers("/pedido/{id}").hasAnyRole("USER", "ADMIN", "VENDEDOR") // Ver detalles por ID
+                        .requestMatchers("/pedido/{id}/**").hasRole("ADMIN") // Actualizar/eliminar pedidos: solo admin
+
+                        // Direccion
+                        .requestMatchers("/direcciones/nueva").hasRole("USER") // Solo usuarios autenticados pueden crear direcciones
+                        .requestMatchers("/direcciones/{id}").hasRole("USER") // El usuario puede ver su propia dirección
+                        .requestMatchers("/direcciones/usuario/{usuarioId}").hasRole("USER") // Ver direcciones de un usuario específico
+                        .requestMatchers("/direcciones/activa").hasRole("USER") // Ver direcciones activas
+                        .requestMatchers("/direcciones").hasRole("ADMIN") // Solo ADMIN puede ver todas las direcciones
+                        .requestMatchers("/direcciones/{id}/editar").hasRole("USER") // Solo el propietario de la dirección o ADMIN pueden editarla
+                        .requestMatchers("/direcciones/{id}/eliminar").hasRole("USER") // Solo el propietario de la dirección o ADMIN pueden eliminarla
 
                         // El resto de las rutas requieren autenticación
                         .anyRequest().authenticated()
-                );
-
-        http.authenticationProvider(authenticationProvider());
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+                )
+                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

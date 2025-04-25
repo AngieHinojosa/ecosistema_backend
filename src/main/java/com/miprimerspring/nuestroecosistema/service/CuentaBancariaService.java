@@ -8,9 +8,14 @@ import java.util.List;
 public interface CuentaBancariaService {
 
     CuentaBancariaDTO crearCuentaBancaria(CuentaBancariaDTO cuentaBancariaDTO);
+
     CuentaBancariaDTO obtenerCuentaBancariaPorId(Long id);
-    List<CuentaBancariaDTO> obtenerCuentasPorUsuario(Integer usuarioId);
+
+    List<CuentaBancariaDTO> obtenerCuentasPorUsuario(Long usuarioId); // Cambio de Integer a Long
+
     List<CuentaBancariaDTO> obtenerTodasCuentas();
+
     CuentaBancariaDTO actualizarCuentaBancaria(Long id, CuentaBancariaDTO cuentaBancariaDTO);
+
     void eliminarCuentaBancaria(Long id);
 }

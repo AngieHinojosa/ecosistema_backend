@@ -39,12 +39,6 @@ public class DireccionRestController {
         return new ResponseEntity<>(direcciones, HttpStatus.OK);
     }
 
-    @GetMapping("/activa")
-    public ResponseEntity<List<DireccionDTO>> obtenerDireccionesActivas(@RequestParam Boolean direccionActiva) {
-        List<DireccionDTO> direcciones = direccionService.obtenerDireccionesActivas(direccionActiva);
-        return new ResponseEntity<>(direcciones, HttpStatus.OK);
-    }
-
     @GetMapping
     public ResponseEntity<List<DireccionDTO>> obtenerTodasDirecciones() {
         List<DireccionDTO> direcciones = direccionService.obtenerTodasDirecciones();

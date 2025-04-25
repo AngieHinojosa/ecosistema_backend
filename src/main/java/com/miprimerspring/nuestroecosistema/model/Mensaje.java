@@ -23,6 +23,10 @@ public class Mensaje {
     @JoinColumn(name = "receptor_id", nullable = false)
     private Usuario receptor;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "soporte_id", nullable = false)
+    private Usuario soporte;  // Nuevo campo para el soporte
+
     @Column(name = "mensaje_contenido", length = 255)
     private String mensajeContenido;
 

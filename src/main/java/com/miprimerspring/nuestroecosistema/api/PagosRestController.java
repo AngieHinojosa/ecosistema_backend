@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +23,7 @@ public class PagosRestController {
     }
 
     @PostMapping("/nuevo")
-    public ResponseEntity<PagoDTO> crearPago(@RequestBody PagoDTO pagoDTO) {
+    public ResponseEntity<PagoDTO> crearPago(@Valid @RequestBody PagoDTO pagoDTO) {
         PagoDTO createdPago = pagosService.crearPago(pagoDTO);
         return ResponseEntity.ok(createdPago);
     }
@@ -57,13 +58,13 @@ public class PagosRestController {
         return ResponseEntity.ok(pagos);
     }
 
-    @PutMapping("/actualizar/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<PagoDTO> actualizarPago(@PathVariable Long id, @RequestBody PagoDTO pagoDTO) {
         PagoDTO updatedPago = pagosService.actualizarPago(id, pagoDTO);
         return ResponseEntity.ok(updatedPago);
     }
 
-    @DeleteMapping("/eliminar/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarPago(@PathVariable Long id) {
         pagosService.eliminarPago(id);
         return ResponseEntity.noContent().build();

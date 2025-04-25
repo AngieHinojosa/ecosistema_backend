@@ -3,9 +3,14 @@ package com.miprimerspring.nuestroecosistema.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Random;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = {"usuario"})
 @Entity
 @Table(name = "cuentas_bancarias")
 public class CuentaBancaria {
@@ -26,5 +31,37 @@ public class CuentaBancaria {
     private String cuentaNumero;
 
     @Column(name = "cuenta_saldo", nullable = false)
-    private Double cuentaSaldo;
+    private BigDecimal cuentaSaldo;
+
+    @Column(name = "fecha_creacion", nullable = false, updatable = false)
+    private LocalDateTime fechaCreacion;
+
+    @PrePersist
+    public void prePersist() {
+        if (cuentaTipo == null) {
+            cuentaTipo = "DEBITO";
+        }
+        if (cuentaNumero == null) {
+            cuentaNumero = generarNumeroCuenta();
+        }
+        if (cuentaSaldo == null) {
+            cuentaSaldo = BigDecimal.ZERO;
+        }
+        if (this.fechaCreacion == null) {
+            this.fechaCreacion = LocalDateTime.now();
+        }
+
+        System.out.println("CuentaBancaria prePersist ejecutado:");
+        System.out.println(this);
+    }
+
+    private String generarNumeroCuenta() {
+        // Genera un número de 16 dígitos aleatorio
+        Random random = new Random();
+        StringBuilder numero = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            numero.append(random.nextInt(10));
+        }
+        return numero.toString();
+    }
 }

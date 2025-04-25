@@ -7,10 +7,13 @@ import java.util.List;
 
 public interface DescuentosExternosService {
 
+    List<DescuentoExternoDTO> obtenerDescuentosExternos();
+
+    DescuentoExternoDTO obtenerDescuentoExternoPorId(Long id);
+
     DescuentoExternoDTO crearDescuentoExterno(DescuentoExternoDTO descuentoExternoDTO);
-    DescuentoExternoDTO obtenerDescuentoExternoPorId(Integer id);
-    List<DescuentoExternoDTO> obtenerDescuentosActivos(Boolean descuentoActivo);
-    List<DescuentoExternoDTO> obtenerTodosDescuentosExternos();
-    DescuentoExternoDTO actualizarDescuentoExterno(Integer id, DescuentoExternoDTO descuentoExternoDTO);
-    void eliminarDescuentoExterno(Integer id);
+
+    DescuentoExternoDTO actualizarDescuentoExterno(Long id, DescuentoExternoDTO descuentoExternoDTO);
+
+    void eliminarDescuentoExterno(Long id);
 }

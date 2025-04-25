@@ -1,16 +1,23 @@
 package com.miprimerspring.nuestroecosistema.service;
 
+import com.miprimerspring.nuestroecosistema.dto.UsuarioDTO;
+import com.miprimerspring.nuestroecosistema.exception.CuentaBancariaDuplicadaException;
+import com.miprimerspring.nuestroecosistema.exception.DocumentoDuplicadoException;
+import com.miprimerspring.nuestroecosistema.mapper.UsuarioMapper;
+import com.miprimerspring.nuestroecosistema.model.CuentaBancaria;
 import com.miprimerspring.nuestroecosistema.model.ERol;
 import com.miprimerspring.nuestroecosistema.model.Usuario;
+import com.miprimerspring.nuestroecosistema.repository.CuentaBancariaRepository;
 import com.miprimerspring.nuestroecosistema.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -19,9 +26,52 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private CuentaBancariaRepository cuentaBancariaRepository;
+
     @Override
     public Usuario crearUsuario(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+        Usuario nuevoUsuario = usuarioRepository.save(usuario);
+        crearCuentaBancariaParaUsuario(nuevoUsuario);
+        return nuevoUsuario;
+    }
+
+    @Override
+    public Usuario registrarDesdeDTO(UsuarioDTO dto) {
+        if (usuarioRepository.findByUsuarioNumeroDocumento(dto.getNumeroDocumento()).isPresent()) {
+            throw new DocumentoDuplicadoException("Ya existe un usuario con el número de documento: " + dto.getNumeroDocumento());
+        }
+
+        if (usuarioRepository.findByUsuarioCorreo(dto.getCorreo()).isPresent()) {
+            throw new DocumentoDuplicadoException("Ya existe un usuario con el correo electrónico: " + dto.getCorreo());
+        }
+
+        Usuario usuario = UsuarioMapper.toEntity(dto, passwordEncoder);
+        Usuario nuevoUsuario = usuarioRepository.save(usuario);
+        crearCuentaBancariaParaUsuario(nuevoUsuario);
+        return nuevoUsuario;
+    }
+
+    private void crearCuentaBancariaParaUsuario(Usuario usuario) {
+        String numeroCuenta = generarNumeroCuenta(usuario);
+
+        if (cuentaBancariaRepository.existsByCuentaNumero(numeroCuenta)) {
+            throw new CuentaBancariaDuplicadaException("Ya existe una cuenta bancaria registrada con el número de documento: " + numeroCuenta);
+        }
+
+        CuentaBancaria cuentaBancaria = new CuentaBancaria();
+        cuentaBancaria.setUsuario(usuario);
+        cuentaBancaria.setCuentaTipo("debito");
+        cuentaBancaria.setCuentaSaldo(BigDecimal.ZERO);
+        cuentaBancaria.setCuentaNumero(numeroCuenta);
+        cuentaBancariaRepository.save(cuentaBancaria);
+    }
+
+    private String generarNumeroCuenta(Usuario usuario) {
+        return usuario.getUsuarioNumeroDocumento();
     }
 
     @Override
@@ -45,13 +95,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<Usuario> obtenerUsuariosPorRol(ERol rol) {  // Usamos ERol en lugar de rolId
-        return usuarioRepository.findByRol(rol);  // Ajustamos a la consulta que ahora usa ERol
-    }
-
-    @Override
-    public List<Usuario> obtenerUsuariosPorVendedor(Boolean vendedor) {
-        return usuarioRepository.findByVendedor(vendedor);
+    public List<Usuario> obtenerUsuariosPorRol(ERol rol) {
+        return usuarioRepository.findByRol(rol);
     }
 
     @Override
@@ -61,7 +106,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public List<Usuario> obtenerUsuariosPorNumeroDocumento(String numeroDocumento) {
-        return usuarioRepository.findByNumeroDocumento(numeroDocumento);
+        return usuarioRepository.findByUsuarioNumeroDocumento(numeroDocumento)
+                .map(List::of)
+                .orElse(List.of());
     }
 
     @Override

@@ -26,4 +26,13 @@ public class PuntosFidelizacion {
 
     @Column(name = "punto_ultima_actualizacion", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp puntoUltimaActualizacion;
+
+    // Métodos para acceder a los puntos acumulados
+    public Integer getPuntosAcumulados() {
+        return puntoCantidad;
+    }
+
+    public void setPuntosAcumulados(Integer puntosAcumulados) {
+        this.puntoCantidad = puntosAcumulados;
+    }
 }

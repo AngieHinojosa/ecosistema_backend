@@ -16,45 +16,28 @@ import java.util.stream.Collectors;
 @Transactional
 public class UsuarioDescuentoServiceImpl implements UsuarioDescuentoService {
 
-    private final UsuarioDescuentoRepository usuarioDescuentoRepository;
-    private final UsuarioDescuentoMapper usuarioDescuentoMapper;
-
     @Autowired
-    public UsuarioDescuentoServiceImpl(UsuarioDescuentoRepository usuarioDescuentoRepository, UsuarioDescuentoMapper usuarioDescuentoMapper) {
-        this.usuarioDescuentoRepository = usuarioDescuentoRepository;
-        this.usuarioDescuentoMapper = usuarioDescuentoMapper;
-    }
+    private UsuarioDescuentoRepository usuarioDescuentoRepository;
 
     @Override
-    public UsuarioDescuentoDTO crearUsuarioDescuento(UsuarioDescuentoDTO usuarioDescuentoDTO) {
-        UsuarioDescuento usuarioDescuento = usuarioDescuentoMapper.toEntity(usuarioDescuentoDTO);
-        usuarioDescuento = usuarioDescuentoRepository.save(usuarioDescuento);
-        return usuarioDescuentoMapper.toDTO(usuarioDescuento);
+    public List<UsuarioDescuentoDTO> obtenerUsuarioDescuentos() {
+        List<UsuarioDescuento> descuentos = usuarioDescuentoRepository.findAll();
+        return descuentos.stream()
+                .map(UsuarioDescuentoMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public UsuarioDescuentoDTO obtenerUsuarioDescuentoPorId(Long id) {
-        return usuarioDescuentoRepository.findById(id)
-                .map(usuarioDescuentoMapper::toDTO)
-                .orElse(null);
+        Optional<UsuarioDescuento> descuentoOpt = usuarioDescuentoRepository.findById(id);
+        return descuentoOpt.map(UsuarioDescuentoMapper::toDTO).orElse(null);
     }
 
     @Override
-    public List<UsuarioDescuentoDTO> obtenerUsuarioDescuentosPorUsuarioId(Integer usuarioId) {
-        List<UsuarioDescuento> usuarioDescuentos = usuarioDescuentoRepository.findByUsuarioId(usuarioId);
-        return usuarioDescuentos.stream().map(usuarioDescuentoMapper::toDTO).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<UsuarioDescuentoDTO> obtenerUsuarioDescuentosPorDescuentoId(Long descuentoId) {
-        List<UsuarioDescuento> usuarioDescuentos = usuarioDescuentoRepository.findByDescuentoId(descuentoId);
-        return usuarioDescuentos.stream().map(usuarioDescuentoMapper::toDTO).collect(Collectors.toList());
-    }
-
-    @Override
-    public UsuarioDescuentoDTO obtenerUsuarioDescuentoPorUsuarioYDescuento(Integer usuarioId, Long descuentoId) {
-        UsuarioDescuento usuarioDescuento = usuarioDescuentoRepository.findByUsuarioAndDescuento(usuarioId, descuentoId);
-        return usuarioDescuento != null ? usuarioDescuentoMapper.toDTO(usuarioDescuento) : null;
+    public UsuarioDescuentoDTO crearUsuarioDescuento(UsuarioDescuentoDTO usuarioDescuentoDTO) {
+        UsuarioDescuento usuarioDescuento = UsuarioDescuentoMapper.toEntity(usuarioDescuentoDTO);
+        UsuarioDescuento savedUsuarioDescuento = usuarioDescuentoRepository.save(usuarioDescuento);
+        return UsuarioDescuentoMapper.toDTO(savedUsuarioDescuento);
     }
 
     @Override

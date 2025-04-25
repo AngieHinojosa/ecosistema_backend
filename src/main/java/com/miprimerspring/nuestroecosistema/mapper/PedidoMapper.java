@@ -2,6 +2,7 @@ package com.miprimerspring.nuestroecosistema.mapper;
 
 import com.miprimerspring.nuestroecosistema.dto.PedidoDTO;
 import com.miprimerspring.nuestroecosistema.model.Direccion;
+import com.miprimerspring.nuestroecosistema.model.EstadoPedido;
 import com.miprimerspring.nuestroecosistema.model.Pedido;
 import com.miprimerspring.nuestroecosistema.model.Usuario;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,10 @@ public class PedidoMapper {
         dto.setDireccionId(entity.getDireccion() != null ? entity.getDireccion().getDireccionId() : null);
         dto.setPedidoTotal(entity.getPedidoTotal());
         dto.setPedidoMoneda(entity.getPedidoMoneda());
-        dto.setPedidoEstado(entity.getPedidoEstado());
+
+        // 👇 Conversión enum → String
+        dto.setPedidoEstado(entity.getPedidoEstado() != null ? entity.getPedidoEstado().name() : null);
+
         dto.setPedidoMetodoPago(entity.getPedidoMetodoPago());
         dto.setPedidoUuidPago(entity.getPedidoUuidPago());
         dto.setPedidoCreadoEn(entity.getPedidoCreadoEn());
@@ -49,7 +53,12 @@ public class PedidoMapper {
 
         entity.setPedidoTotal(dto.getPedidoTotal());
         entity.setPedidoMoneda(dto.getPedidoMoneda());
-        entity.setPedidoEstado(dto.getPedidoEstado());
+
+        // 👇 Conversión String → enum
+        if (dto.getPedidoEstado() != null) {
+            entity.setPedidoEstado(EstadoPedido.valueOf(dto.getPedidoEstado()));
+        }
+
         entity.setPedidoMetodoPago(dto.getPedidoMetodoPago());
         entity.setPedidoUuidPago(dto.getPedidoUuidPago());
         entity.setPedidoCreadoEn(dto.getPedidoCreadoEn());
@@ -58,7 +67,6 @@ public class PedidoMapper {
         return entity;
     }
 
-    // ✅ NUEVO MÉTODO para listas
     public List<PedidoDTO> toDTO(List<Pedido> pedidos) {
         if (pedidos == null) {
             return null;

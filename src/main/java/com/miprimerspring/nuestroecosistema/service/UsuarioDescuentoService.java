@@ -7,10 +7,11 @@ import java.util.List;
 
 public interface UsuarioDescuentoService {
 
-    UsuarioDescuentoDTO crearUsuarioDescuento(UsuarioDescuentoDTO usuarioDescuentoDTO);
+    List<UsuarioDescuentoDTO> obtenerUsuarioDescuentos();
+
     UsuarioDescuentoDTO obtenerUsuarioDescuentoPorId(Long id);
-    List<UsuarioDescuentoDTO> obtenerUsuarioDescuentosPorUsuarioId(Integer usuarioId);
-    List<UsuarioDescuentoDTO> obtenerUsuarioDescuentosPorDescuentoId(Long descuentoId);
-    UsuarioDescuentoDTO obtenerUsuarioDescuentoPorUsuarioYDescuento(Integer usuarioId, Long descuentoId);
+
+    UsuarioDescuentoDTO crearUsuarioDescuento(UsuarioDescuentoDTO usuarioDescuentoDTO);
+
     void eliminarUsuarioDescuento(Long id);
 }

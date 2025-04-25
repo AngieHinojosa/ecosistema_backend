@@ -6,6 +6,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = {"pedido"})
 @Entity
 @Table(name = "pagos")
 public class Pago {
@@ -20,7 +21,7 @@ public class Pago {
     private Pedido pedido;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "cuenta_id", nullable = false)
+    @JoinColumn(name = "cuenta_id", nullable = true)
     private CuentaBancaria cuenta;
 
     @Column(name = "pago_monto")
@@ -31,5 +32,21 @@ public class Pago {
 
     @Column(name = "pago_fecha", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private java.sql.Timestamp pagoFecha;
+
+    // 👇 Puedes añadir este método para depurar rápido en consola
+    public void imprimirDatosPago() {
+        System.out.println("=== DATOS DEL PAGO ===");
+        System.out.println("ID: " + pagoId);
+        System.out.println("Método: " + pagoMetodo);
+        System.out.println("Monto: " + pagoMonto);
+        System.out.println("Fecha: " + pagoFecha);
+        if (cuenta != null) {
+            System.out.println("Cuenta asociada: " + cuenta.getCuentaNumero());
+        } else {
+            System.out.println("Cuenta asociada: Ninguna");
+        }
+        System.out.println("======================");
+    }
 }
+
 

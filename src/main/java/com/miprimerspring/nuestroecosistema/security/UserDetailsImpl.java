@@ -1,6 +1,7 @@
 package com.miprimerspring.nuestroecosistema.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.miprimerspring.nuestroecosistema.model.ERol;
 import com.miprimerspring.nuestroecosistema.model.Usuario;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,7 +18,7 @@ public class UserDetailsImpl implements UserDetails {
 
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private Long usuarioId;
 
     private String email;
 
@@ -25,6 +26,12 @@ public class UserDetailsImpl implements UserDetails {
     private String password;
 
     private Collection<? extends GrantedAuthority> authorities;
+
+    public List<ERol> getRoles() {
+        return authorities.stream()
+                .map(grantedAuthority -> ERol.valueOf(grantedAuthority.getAuthority()))
+                .collect(Collectors.toList());
+    }
 
     public static UserDetailsImpl build(Usuario usuario) {
         // Convertimos el enum ERol directamente en authorities
@@ -51,7 +58,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public Long getUsuarioId() {
-        return id;
+        return usuarioId;
     }
 
     public String getUsuarioCorreo() {
@@ -88,6 +95,6 @@ public class UserDetailsImpl implements UserDetails {
         if (this == o) return true;
         if (!(o instanceof UserDetailsImpl)) return false;
         UserDetailsImpl that = (UserDetailsImpl) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(usuarioId, that.usuarioId);
     }
 }

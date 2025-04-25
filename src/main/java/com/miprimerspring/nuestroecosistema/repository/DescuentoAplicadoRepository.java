@@ -13,20 +13,5 @@ import java.util.List;
 @Repository
 public interface DescuentoAplicadoRepository extends JpaRepository<DescuentoAplicado, Long>, JpaSpecificationExecutor<DescuentoAplicado> {
 
-    // Consulta simple con JPQL
-    @Query("SELECT d FROM DescuentoAplicado d WHERE d.descuentoCodigo = :codigo")
-    List<DescuentoAplicado> buscarPorCodigo(@Param("codigo") String codigo);
 
-    // Métodos derivados
-    List<DescuentoAplicado> findByPedido_PedidoId(Integer pedidoId);
-    List<DescuentoAplicado> findByDescuentosExternos_DescuentoId(Integer descuentoId);
-
-    // Especificaciones básicas
-    static Specification<DescuentoAplicado> porPedidoId(Integer pedidoId) {
-        return (root, query, cb) -> cb.equal(root.get("pedido").get("pedidoId"), pedidoId);
-    }
-
-    static Specification<DescuentoAplicado> porDescuentoId(Integer descuentoId) {
-        return (root, query, cb) -> cb.equal(root.get("descuentosExternos").get("descuentoId"), descuentoId);
-    }
 }

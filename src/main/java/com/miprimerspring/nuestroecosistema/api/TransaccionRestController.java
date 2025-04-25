@@ -23,10 +23,16 @@ public class TransaccionRestController {
     }
 
     // Crear una nueva transacción
-    @PostMapping("/nueva")
-    public ResponseEntity<TransaccionDTO> crearTransaccion(@RequestBody TransaccionDTO transaccionDTO) {
-        TransaccionDTO transaccion = transaccionService.crearTransaccion(transaccionDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(transaccion);
+    @PostMapping
+    public ResponseEntity<?> crearTransaccion(@RequestBody TransaccionDTO transaccionDTO) {
+        try {
+            TransaccionDTO nuevaTransaccion = transaccionService.crearTransaccion(transaccionDTO);
+            return ResponseEntity.ok(nuevaTransaccion);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Error al crear la transacción: " + e.getMessage());
+        }
     }
 
     // Obtener transacción por ID

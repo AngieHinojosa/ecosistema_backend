@@ -41,7 +41,7 @@ public class PuntosFidelizacionServiceImpl implements PuntosFidelizacionService 
 
     @Override
     public List<PuntosFidelizacionDTO> obtenerPuntosPorUsuario(Integer usuarioId) {
-        List<PuntosFidelizacion> puntos = puntosFidelizacionRepository.findByUsuario_UsuarioId(usuarioId);
+        List<PuntosFidelizacion> puntos = puntosFidelizacionRepository.buscarPorUsuario(usuarioId);
         return puntos.stream().map(puntosFidelizacionMapper::toDTO).collect(Collectors.toList());
     }
 

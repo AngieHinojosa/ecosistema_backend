@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -21,18 +23,9 @@ public class Carrito {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "producto_id", nullable = false)
-    private Producto producto;
-
-    @Column(name = "carrito_cantidad", nullable = false)
-    private Integer carritoCantidad = 1;
+    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CarritoProducto> productos = new ArrayList<>();
 
     @Column(name = "carrito_agregado_en")
-    private LocalDateTime carritoAgregadoEn;
-
-    @Column(name = "cantidad", nullable = false)
-    private Integer cantidad;
+    private LocalDateTime carritoAgregadoEn = LocalDateTime.now();
 }
-
-

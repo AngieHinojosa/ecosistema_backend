@@ -1,6 +1,7 @@
 package com.miprimerspring.nuestroecosistema.service;
 
 import com.miprimerspring.nuestroecosistema.dto.CuentaBancariaDTO;
+import com.miprimerspring.nuestroecosistema.exception.CuentaBancariaNotFoundException;
 import com.miprimerspring.nuestroecosistema.mapper.CuentaBancariaMapper;
 import com.miprimerspring.nuestroecosistema.model.CuentaBancaria;
 import com.miprimerspring.nuestroecosistema.repository.CuentaBancariaRepository;
@@ -35,12 +36,12 @@ public class CuentaBancariaServiceImpl implements CuentaBancariaService {
     @Override
     public CuentaBancariaDTO obtenerCuentaBancariaPorId(Long id) {
         CuentaBancaria cuentaBancaria = cuentaBancariaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cuenta Bancaria no encontrada"));
+                .orElseThrow(() -> new CuentaBancariaNotFoundException("Cuenta Bancaria no encontrada"));
         return cuentaBancariaMapper.toDTO(cuentaBancaria);
     }
 
     @Override
-    public List<CuentaBancariaDTO> obtenerCuentasPorUsuario(Integer usuarioId) {
+    public List<CuentaBancariaDTO> obtenerCuentasPorUsuario(Long usuarioId) {  // Cambio de Integer a Long
         List<CuentaBancaria> cuentas = cuentaBancariaRepository.findByUsuarioId(usuarioId);
         return cuentas.stream()
                 .map(cuentaBancariaMapper::toDTO)
@@ -58,7 +59,7 @@ public class CuentaBancariaServiceImpl implements CuentaBancariaService {
     @Override
     public CuentaBancariaDTO actualizarCuentaBancaria(Long id, CuentaBancariaDTO cuentaBancariaDTO) {
         CuentaBancaria cuentaExistente = cuentaBancariaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cuenta Bancaria no encontrada"));
+                .orElseThrow(() -> new CuentaBancariaNotFoundException("Cuenta Bancaria no encontrada"));
         cuentaExistente = cuentaBancariaMapper.toEntity(cuentaBancariaDTO);
         cuentaExistente.setCuentaId(id);  // Mantener el ID
         CuentaBancaria updatedCuentaBancaria = cuentaBancariaRepository.save(cuentaExistente);
@@ -68,7 +69,7 @@ public class CuentaBancariaServiceImpl implements CuentaBancariaService {
     @Override
     public void eliminarCuentaBancaria(Long id) {
         CuentaBancaria cuentaBancaria = cuentaBancariaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cuenta Bancaria no encontrada"));
+                .orElseThrow(() -> new CuentaBancariaNotFoundException("Cuenta Bancaria no encontrada"));
         cuentaBancariaRepository.delete(cuentaBancaria);
     }
 }

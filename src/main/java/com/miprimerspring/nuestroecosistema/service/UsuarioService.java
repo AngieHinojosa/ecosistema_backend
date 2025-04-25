@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.service;
 
+import com.miprimerspring.nuestroecosistema.dto.UsuarioDTO;
 import com.miprimerspring.nuestroecosistema.model.ERol;
 import com.miprimerspring.nuestroecosistema.model.Usuario;
 
@@ -11,6 +12,8 @@ public interface UsuarioService {
 
     Usuario crearUsuario(Usuario usuario);
 
+    Usuario registrarDesdeDTO(UsuarioDTO dto); // NUEVO
+
     Optional<Usuario> obtenerUsuarioPorId(Long id);
 
     Optional<Usuario> obtenerUsuarioPorCorreo(String correo);
@@ -19,9 +22,7 @@ public interface UsuarioService {
 
     List<Usuario> obtenerUsuariosPorEstado(String estado);
 
-    List<Usuario> obtenerUsuariosPorRol(ERol rol);  // Método en la interfaz
-
-    List<Usuario> obtenerUsuariosPorVendedor(Boolean vendedor);
+    List<Usuario> obtenerUsuariosPorRol(ERol rol);
 
     List<Usuario> obtenerUsuariosPorTipoDocumento(String tipoDocumento);
 

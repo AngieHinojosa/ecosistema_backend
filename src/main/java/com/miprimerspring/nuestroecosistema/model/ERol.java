@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ERol {
 
-    ROLE_USER,  // Rol de usuario regular
-    ROLE_ADMIN; // Rol de administrador
+    ROLE_USER,     // Rol de usuario regular
+    ROLE_ADMIN,    // Rol de administrador
+    ROLE_VENDEDOR; // Nuevo rol de vendedor
 
-    // Método para convertir una cadena a un valor del enum (por ejemplo, al recibir roles desde un request)
     @JsonCreator
     public static ERol fromString(String role) {
         switch (role.toUpperCase()) {
@@ -16,14 +16,15 @@ public enum ERol {
                 return ERol.ROLE_USER;
             case "ADMIN":
                 return ERol.ROLE_ADMIN;
+            case "VENDEDOR":
+                return ERol.ROLE_VENDEDOR;
             default:
-                throw new IllegalArgumentException("Unknown role: " + role);
+                throw new IllegalArgumentException("Unknown role: '" + role + "'. Valid roles are USER, ADMIN, and VENDEDOR.");
         }
     }
 
-    // Método para convertir el enum a una cadena (para serialización a JSON)
     @JsonValue
     public String toJson() {
-        return this.name();
+        return this.name().substring(5).toLowerCase();  // Convierte a minúsculas y omite "ROLE_"
     }
 }

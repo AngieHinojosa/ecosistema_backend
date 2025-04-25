@@ -16,7 +16,6 @@ public class DireccionMapper {
         DireccionDTO dto = new DireccionDTO();
         dto.setDireccionId(entity.getDireccionId());
         dto.setUsuarioId(entity.getUsuario() != null ? entity.getUsuario().getUsuarioId() : null);
-        dto.setDireccionTipo(entity.getDireccionTipo());
         dto.setDireccionCalle(entity.getDireccionCalle());
         dto.setDireccionNumero(entity.getDireccionNumero());
         dto.setDireccionComuna(entity.getDireccionComuna());
@@ -24,8 +23,6 @@ public class DireccionMapper {
         dto.setDireccionRegion(entity.getDireccionRegion());
         dto.setDireccionCodigoPostal(entity.getDireccionCodigoPostal());
         dto.setDireccionPais(entity.getDireccionPais());
-        dto.setDireccionActiva(entity.getDireccionActiva());
-        dto.setDireccionFechaCreacion(entity.getDireccionFechaCreacion());
 
         return dto;
     }
@@ -42,7 +39,6 @@ public class DireccionMapper {
         usuario.setUsuarioId(dto.getUsuarioId());
         entity.setUsuario(usuario);
 
-        entity.setDireccionTipo(dto.getDireccionTipo());
         entity.setDireccionCalle(dto.getDireccionCalle());
         entity.setDireccionNumero(dto.getDireccionNumero());
         entity.setDireccionComuna(dto.getDireccionComuna());
@@ -50,8 +46,6 @@ public class DireccionMapper {
         entity.setDireccionRegion(dto.getDireccionRegion());
         entity.setDireccionCodigoPostal(dto.getDireccionCodigoPostal());
         entity.setDireccionPais(dto.getDireccionPais());
-        entity.setDireccionActiva(dto.getDireccionActiva());
-        entity.setDireccionFechaCreacion(dto.getDireccionFechaCreacion());
 
         return entity;
     }

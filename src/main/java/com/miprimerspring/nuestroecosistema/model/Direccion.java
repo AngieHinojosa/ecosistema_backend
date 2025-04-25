@@ -19,9 +19,6 @@ public class Direccion {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @Column(name = "direccion_tipo", length = 20, nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'envio'")
-    private String direccionTipo;
-
     @Column(name = "direccion_calle", length = 255)
     private String direccionCalle;
 
@@ -43,9 +40,4 @@ public class Direccion {
     @Column(name = "direccion_pais", length = 255)
     private String direccionPais;
 
-    @Column(name = "direccion_activa", columnDefinition = "TINYINT(1) DEFAULT 1")
-    private Boolean direccionActiva;
-
-    @Column(name = "direccion_fecha_creacion", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private java.sql.Timestamp direccionFechaCreacion;
 }

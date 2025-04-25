@@ -24,13 +24,17 @@ public class PedidoDetalleRestController {
     @PostMapping("/nuevo")
     public ResponseEntity<PedidoDetalleDTO> crearPedidoDetalle(@RequestBody PedidoDetalleDTO pedidoDetalleDTO) {
         PedidoDetalleDTO createdPedidoDetalle = pedidoDetalleService.crearPedidoDetalle(pedidoDetalleDTO);
-        return ResponseEntity.ok(createdPedidoDetalle);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdPedidoDetalle);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PedidoDetalleDTO> obtenerPedidoDetallePorId(@PathVariable Long id) {
         PedidoDetalleDTO pedidoDetalleDTO = pedidoDetalleService.obtenerPedidoDetallePorId(id);
-        return ResponseEntity.ok(pedidoDetalleDTO);
+        if (pedidoDetalleDTO != null) {
+            return ResponseEntity.ok(pedidoDetalleDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/porPedido/{pedidoId}")
@@ -54,7 +58,11 @@ public class PedidoDetalleRestController {
     @PutMapping("/actualizar/{id}")
     public ResponseEntity<PedidoDetalleDTO> actualizarPedidoDetalle(@PathVariable Long id, @RequestBody PedidoDetalleDTO pedidoDetalleDTO) {
         PedidoDetalleDTO updatedPedidoDetalle = pedidoDetalleService.actualizarPedidoDetalle(id, pedidoDetalleDTO);
-        return ResponseEntity.ok(updatedPedidoDetalle);
+        if (updatedPedidoDetalle != null) {
+            return ResponseEntity.ok(updatedPedidoDetalle);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/eliminar/{id}")

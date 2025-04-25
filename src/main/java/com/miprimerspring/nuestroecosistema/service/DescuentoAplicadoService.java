@@ -1,16 +1,19 @@
 package com.miprimerspring.nuestroecosistema.service;
 
 import com.miprimerspring.nuestroecosistema.dto.DescuentoAplicadoDTO;
+import com.miprimerspring.nuestroecosistema.dto.UsuarioDescuentoDTO;
 
 import java.util.List;
 
 public interface DescuentoAplicadoService {
 
-    DescuentoAplicadoDTO crearDescuentoAplicado(DescuentoAplicadoDTO descuentoAplicadoDTO);
+    List<DescuentoAplicadoDTO> obtenerDescuentosAplicados();
+
     DescuentoAplicadoDTO obtenerDescuentoAplicadoPorId(Long id);
-    List<DescuentoAplicadoDTO> obtenerDescuentosPorPedido(Integer pedidoId);
-    List<DescuentoAplicadoDTO> obtenerDescuentosPorDescuento(Integer descuentoId);
-    List<DescuentoAplicadoDTO> obtenerTodosDescuentosAplicados();
+
+    DescuentoAplicadoDTO crearDescuentoAplicado(DescuentoAplicadoDTO descuentoAplicadoDTO);
+
     DescuentoAplicadoDTO actualizarDescuentoAplicado(Long id, DescuentoAplicadoDTO descuentoAplicadoDTO);
+
     void eliminarDescuentoAplicado(Long id);
 }

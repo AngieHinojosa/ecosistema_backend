@@ -47,14 +47,6 @@ public class DireccionServiceImpl implements DireccionService {
     }
 
     @Override
-    public List<DireccionDTO> obtenerDireccionesActivas(Boolean direccionActiva) {
-        List<Direccion> direcciones = direccionRepository.findByDireccionActiva(direccionActiva);
-        return direcciones.stream()
-                .map(direccionMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<DireccionDTO> obtenerTodasDirecciones() {
         List<Direccion> direcciones = direccionRepository.findAll();
         return direcciones.stream()

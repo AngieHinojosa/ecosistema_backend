@@ -11,58 +11,35 @@ import org.springframework.stereotype.Component;
 @Component
 public class DescuentoAplicadoMapper {
 
-    // Convertir de entidad a DTO
-    public DescuentoAplicadoDTO toDTO(DescuentoAplicado entity) {
-        if (entity == null) {
+    public static DescuentoAplicadoDTO toDTO(DescuentoAplicado descuentoAplicado) {
+        if (descuentoAplicado == null) {
             return null;
         }
 
         DescuentoAplicadoDTO dto = new DescuentoAplicadoDTO();
-        dto.setDescuentoAplicadoId(entity.getDescuentoAplicadoId());
-
-        // Mapear el Pedido DTO usando el ID del pedido
-        if (entity.getPedido() != null) {
-            PedidoDTO pedidoDTO = new PedidoDTO();
-            pedidoDTO.setPedidoId(entity.getPedido().getPedidoId());
-            // Aquí podrías mapear más campos si es necesario
-            dto.setPedidoId(pedidoDTO.getPedidoId());
-        }
-
-        // Mapear el Descuento DTO usando el ID del descuento
-        if (entity.getDescuentosExternos() != null) {
-            DescuentoExternoDTO descuentosExternosDTO = new DescuentoExternoDTO();
-            descuentosExternosDTO.setDescuentoId((long) entity.getDescuentosExternos().getDescuentoId().intValue());  // Conversión
-            dto.setDescuentoId(descuentosExternosDTO.getDescuentoId());
-        }
-
-        dto.setDescuentoMonto(entity.getDescuentoMonto());
-        dto.setDescuentoCodigo(entity.getDescuentoCodigo());
+        dto.setDescuentoAplicadoId(descuentoAplicado.getDescuentoAplicadoId());
+        dto.setPedidoId(descuentoAplicado.getPedido().getPedidoId());
+        dto.setDescripcion(descuentoAplicado.getDescripcion());
+        dto.setPorcentajeDescuento(descuentoAplicado.getPorcentajeDescuento());
+        dto.setDescuentoAplicadoTotal(descuentoAplicado.getDescuentoAplicadoTotal());
+        dto.setDescuentoCodigo(descuentoAplicado.getDescuentoCodigo());
 
         return dto;
     }
 
-    // Convertir de DTO a entidad
-    public DescuentoAplicado toEntity(DescuentoAplicadoDTO dto) {
+    public static DescuentoAplicado toEntity(DescuentoAplicadoDTO dto) {
         if (dto == null) {
             return null;
         }
 
-        DescuentoAplicado entity = new DescuentoAplicado();
-        entity.setDescuentoAplicadoId(dto.getDescuentoAplicadoId());
+        DescuentoAplicado descuento = new DescuentoAplicado();
+        descuento.setDescuentoAplicadoId(dto.getDescuentoAplicadoId());
+        // Aquí necesitarás setear la entidad 'Pedido' si es necesario
+        descuento.setDescripcion(dto.getDescripcion());
+        descuento.setPorcentajeDescuento(dto.getPorcentajeDescuento());
+        descuento.setDescuentoAplicadoTotal(dto.getDescuentoAplicadoTotal());
+        descuento.setDescuentoCodigo(dto.getDescuentoCodigo());
 
-        // Mapear Pedido desde el DTO a la entidad
-        Pedido pedido = new Pedido();
-        pedido.setPedidoId(dto.getPedidoId()); // Establecer solo el ID
-        entity.setPedido(pedido);
-
-        // Mapear Descuento desde el DTO a la entidad
-        DescuentosExternos descuento = new DescuentosExternos();
-        descuento.setDescuentoId(Math.toIntExact(dto.getDescuentoId())); // Establecer solo el ID
-        entity.setDescuentosExternos(descuento);
-
-        entity.setDescuentoMonto(dto.getDescuentoMonto());
-        entity.setDescuentoCodigo(dto.getDescuentoCodigo());
-
-        return entity;
+        return descuento;
     }
 }

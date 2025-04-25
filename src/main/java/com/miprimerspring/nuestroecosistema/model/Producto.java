@@ -2,6 +2,7 @@ package com.miprimerspring.nuestroecosistema.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
@@ -10,16 +11,18 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Entity
 @Table(name = "productos")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "producto_id")
+    @EqualsAndHashCode.Include // <- Este es el campo que se usará para comparar objetos Producto
     private Long productoId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "vendedor_id", nullable = false)
-    private Vendedor vendedor;
+    @JoinColumn(name = "usuario_id", nullable = false) // Relación con el usuario que lo publicó
+    private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id", nullable = false)
@@ -37,9 +40,7 @@ public class Producto {
     @Column(name = "producto_stock")
     private Integer productoStock;
 
-    @Column(name = "producto_estado", length = 20)
-    private String productoEstado;
-
-    @Column(name = "producto_creado_en", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @CreationTimestamp
+    @Column(name = "producto_creado_en", updatable = false)
     private Timestamp productoCreadoEn;
 }

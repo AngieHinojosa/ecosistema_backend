@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.api;
 
+import com.miprimerspring.nuestroecosistema.dto.UsuarioDTO;
 import com.miprimerspring.nuestroecosistema.model.ERol;
 import com.miprimerspring.nuestroecosistema.model.Usuario;
 import com.miprimerspring.nuestroecosistema.service.UsuarioService;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -23,9 +25,9 @@ public class UsuarioRestController {
         this.usuarioService = usuarioService;
     }
 
-    @PostMapping("/nuevo")
-    public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
-        Usuario usuarioCreado = usuarioService.crearUsuario(usuario);
+    @PostMapping("/registro")
+    public ResponseEntity<Usuario> registrarUsuario(@Valid @RequestBody UsuarioDTO dto) {
+        Usuario usuarioCreado = usuarioService.registrarDesdeDTO(dto);
         return new ResponseEntity<>(usuarioCreado, HttpStatus.CREATED);
     }
 
@@ -45,6 +47,9 @@ public class UsuarioRestController {
 
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<Usuario>> obtenerUsuariosPorEstado(@PathVariable String estado) {
+        if (!estado.matches("ACTIVO|INACTIVO|BLOQUEADO")) {
+            return ResponseEntity.badRequest().build();
+        }
         List<Usuario> usuarios = usuarioService.obtenerUsuariosPorEstado(estado);
         return ResponseEntity.ok(usuarios);
     }
@@ -55,14 +60,11 @@ public class UsuarioRestController {
         return ResponseEntity.ok(usuarios);
     }
 
-    @GetMapping("/vendedor/{vendedor}")
-    public ResponseEntity<List<Usuario>> obtenerUsuariosPorVendedor(@PathVariable Boolean vendedor) {
-        List<Usuario> usuarios = usuarioService.obtenerUsuariosPorVendedor(vendedor);
-        return ResponseEntity.ok(usuarios);
-    }
-
     @GetMapping("/tipo-documento/{tipoDocumento}")
     public ResponseEntity<List<Usuario>> obtenerUsuariosPorTipoDocumento(@PathVariable String tipoDocumento) {
+        if (!tipoDocumento.matches("RUT|PASAPORTE")) {
+            return ResponseEntity.badRequest().build();
+        }
         List<Usuario> usuarios = usuarioService.obtenerUsuariosPorTipoDocumento(tipoDocumento);
         return ResponseEntity.ok(usuarios);
     }

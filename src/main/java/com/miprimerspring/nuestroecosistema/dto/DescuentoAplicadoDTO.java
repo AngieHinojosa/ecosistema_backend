@@ -6,8 +6,9 @@ import lombok.Data;
 public class DescuentoAplicadoDTO {
 
     private Long descuentoAplicadoId;
-    private Long pedidoId;  // Almacena solo el ID del pedido
-    private Long descuentoId;  // Almacena solo el ID del descuento
-    private Double descuentoMonto;
+    private Long pedidoId;
+    private String descripcion;
+    private Double porcentajeDescuento;
+    private Double descuentoAplicadoTotal;
     private String descuentoCodigo;
 }

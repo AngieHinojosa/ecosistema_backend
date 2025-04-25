@@ -18,9 +18,6 @@ public interface PuntosFidelizacionRepository extends JpaRepository<PuntosFideli
     @Query("SELECT p FROM PuntosFidelizacion p WHERE p.usuario.usuarioId = :usuarioId")
     List<PuntosFidelizacion> buscarPorUsuario(@Param("usuarioId") Integer usuarioId);
 
-    // Métodos derivados
-    List<PuntosFidelizacion> findByUsuario_UsuarioId(Integer usuarioId);
-
     // Especificaciones básicas
     static Specification<PuntosFidelizacion> porUsuarioId(Integer usuarioId) {
         return (root, query, cb) -> cb.equal(root.get("usuario").get("usuarioId"), usuarioId);
@@ -33,4 +30,5 @@ public interface PuntosFidelizacionRepository extends JpaRepository<PuntosFideli
     static Specification<PuntosFidelizacion> porUltimaActualizacion(Timestamp ultimaActualizacion) {
         return (root, query, cb) -> cb.equal(root.get("puntoUltimaActualizacion"), ultimaActualizacion);
     }
+
 }

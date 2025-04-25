@@ -2,12 +2,15 @@ package com.miprimerspring.nuestroecosistema.dto;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class CuentaBancariaDTO {
 
     private Long cuentaId;
-    private Long usuarioId;  // Almacena solo el ID del usuario
-    private String cuentaTipo;
+    private Long usuarioId;
+    private String cuentaTipo = "debito";
     private String cuentaNumero;
-    private Double cuentaSaldo;
+    private BigDecimal cuentaSaldo = BigDecimal.ZERO;
+    private String fechaCreacion;
 }

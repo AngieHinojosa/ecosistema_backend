@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.repository;
 
+import com.miprimerspring.nuestroecosistema.model.DescuentosExternos;
 import com.miprimerspring.nuestroecosistema.model.Direccion;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +20,6 @@ public interface DireccionRepository extends JpaRepository<Direccion, Integer>, 
 
     // Métodos derivados
     List<Direccion> findByUsuario_UsuarioId(Integer usuarioId);
-    List<Direccion> findByDireccionActiva(Boolean direccionActiva);
 
     // Especificaciones básicas
     static Specification<Direccion> porUsuarioId(Integer usuarioId) {
@@ -28,10 +28,6 @@ public interface DireccionRepository extends JpaRepository<Direccion, Integer>, 
 
     static Specification<Direccion> porCalle(String calle) {
         return (root, query, cb) -> cb.like(root.get("direccionCalle"), "%" + calle + "%");
-    }
-
-    static Specification<Direccion> porDireccionActiva(Boolean direccionActiva) {
-        return (root, query, cb) -> cb.equal(root.get("direccionActiva"), direccionActiva);
     }
 
 }

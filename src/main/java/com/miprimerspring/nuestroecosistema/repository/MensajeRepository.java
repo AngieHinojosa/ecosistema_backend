@@ -30,4 +30,11 @@ public interface MensajeRepository extends JpaRepository<Mensaje, Long>, JpaSpec
     static Specification<Mensaje> porReceptorId(Integer receptorId) {
         return (root, query, cb) -> cb.equal(root.get("receptor").get("usuarioId"), receptorId);
     }
+
+    // Mensajes enviados por un usuario al soporte
+    List<Mensaje> findByEmisor_UsuarioIdAndReceptor_UsuarioId(Integer emisorId, Integer receptorId);
+
+    // Mensajes recibidos por un usuario desde el soporte
+    List<Mensaje> findByReceptor_UsuarioIdAndEmisor_UsuarioId(Integer receptorId, Integer emisorId);
+
 }

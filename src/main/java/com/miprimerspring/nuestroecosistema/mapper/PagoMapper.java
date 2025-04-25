@@ -4,8 +4,6 @@ import com.miprimerspring.nuestroecosistema.dto.PagoDTO;
 import com.miprimerspring.nuestroecosistema.model.CuentaBancaria;
 import com.miprimerspring.nuestroecosistema.model.Pago;
 import com.miprimerspring.nuestroecosistema.model.Pedido;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -31,67 +31,55 @@ public class AuthRestController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
+    // Endpoint para el login
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDTO loginRequest) {
-        // Autenticación del usuario con los nuevos nombres de campo
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsuarioCorreo(),  // Usamos usuarioCorreo
-                        loginRequest.getUsuarioContrasena()  // Usamos usuarioContrasena
+                        loginRequest.getUsuarioCorreo(),
+                        loginRequest.getUsuarioContrasena()
                 )
         );
 
-        // Obtener detalles del usuario autenticado
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
-        // Generar el JWT
         String jwtToken = jwtUtils.generateJwtToken(userDetails);
 
-        // Devolver la respuesta con el JWT, usando el correo del usuario como email
         return ResponseEntity.ok(new JwtResponse(jwtToken, userDetails.getUsername()));
     }
 
+    // Endpoint para el registro de usuarios
     @PostMapping("/registro")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody Usuario usuario) {
-        // Verificar si el usuario ya existe por correo
+    public ResponseEntity<?> registerUser(@Valid @RequestBody Usuario usuario,
+                                          @RequestParam Boolean vendedor,
+                                          @RequestParam(required = false, defaultValue = "false") Boolean admin) {
         if (usuarioService.existeUsuarioPorCorreo(usuario.getUsuarioCorreo())) {
             return ResponseEntity.badRequest().body("Error: El email ya está en uso");
         }
 
-        // Asignar roles y otras configuraciones antes de guardar
         Set<ERol> roles = new HashSet<>();
-        if (usuario.getRoles() == null || usuario.getRoles().isEmpty()) {
-            roles.add(ERol.ROLE_USER);  // Usamos ERol en lugar de Rol
-        } else {
-            // Aquí no necesitamos la clase Rol ni RolService, simplemente asignamos los valores del enum ERol
-            usuario.getRoles().forEach(rol -> {
-                if (rol != null) {
-                    // Asignamos el rol directamente sin buscarlo en la base de datos, porque ahora usamos un enum
-                    roles.add(rol);
-                }
-            });
+        roles.add(ERol.ROLE_USER);
+
+        if (vendedor) {
+            roles.add(ERol.ROLE_VENDEDOR);
         }
 
-        // Establecer los roles del usuario
+        if (admin) {
+            roles.add(ERol.ROLE_ADMIN);
+        }
+
         usuario.setRoles(roles);
-
-        // Codificar la contraseña
         usuario.setUsuarioContrasena(passwordEncoder.encode(usuario.getUsuarioContrasena()));
+        usuario.setUsuarioVendedor(vendedor);
 
-        // Establecer si es vendedor
-        usuario.setUsuarioVendedor(false);
-
-        // Llamar al servicio para guardar el nuevo usuario
-        Usuario usuarioGuardado = usuarioService.crearUsuario(usuario); // Cambié de UsuarioDTO a Usuario
+        Usuario usuarioGuardado = usuarioService.crearUsuario(usuario);
 
         return new ResponseEntity<>(usuarioGuardado, HttpStatus.CREATED);
     }
 
-    // DTO para la respuesta del JWT
     @Data
     @AllArgsConstructor
     public static class JwtResponse {
         private String token;
-        private String email;  // Aquí puedes mantener el correo como email en la respuesta
+        private String email;
     }
 }

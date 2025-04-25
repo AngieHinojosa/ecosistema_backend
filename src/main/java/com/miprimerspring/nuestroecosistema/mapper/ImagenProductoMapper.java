@@ -3,7 +3,6 @@ package com.miprimerspring.nuestroecosistema.mapper;
 import com.miprimerspring.nuestroecosistema.dto.ImagenProductoDTO;
 import com.miprimerspring.nuestroecosistema.model.ImagenProducto;
 import com.miprimerspring.nuestroecosistema.model.Producto;
-import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
 @Component

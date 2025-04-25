@@ -1,26 +1,37 @@
 package com.miprimerspring.nuestroecosistema.mapper;
 
 import com.miprimerspring.nuestroecosistema.dto.UsuarioDescuentoDTO;
+import com.miprimerspring.nuestroecosistema.model.DescuentosExternos;
+import com.miprimerspring.nuestroecosistema.model.Usuario;
 import com.miprimerspring.nuestroecosistema.model.UsuarioDescuento;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UsuarioDescuentoMapper {
 
-    // Método para mapear de DTO a entidad
-    public UsuarioDescuento toEntity(UsuarioDescuentoDTO usuarioDescuentoDTO) {
-        UsuarioDescuento usuarioDescuento = new UsuarioDescuento();
-        usuarioDescuento.setUsuarioDescuentoId(usuarioDescuentoDTO.getUsuarioDescuentoId());
-        usuarioDescuento.setDescuentoAplicado(usuarioDescuentoDTO.getDescuentoAplicado());  // Mapeo del descuentoAplicado
-        // Aquí solo se mapea la información básica de la entidad
-        return usuarioDescuento;
+    public static UsuarioDescuentoDTO toDTO(UsuarioDescuento usuarioDescuento) {
+        if (usuarioDescuento == null) {
+            return null;
+        }
+
+        UsuarioDescuentoDTO dto = new UsuarioDescuentoDTO();
+        dto.setUsuarioDescuentoId(usuarioDescuento.getUsuarioDescuentoId());
+        dto.setUsuarioId(usuarioDescuento.getUsuario().getUsuarioId());
+        dto.setDescuentoAplicadoId(usuarioDescuento.getDescuentoAplicado() != null ? usuarioDescuento.getDescuentoAplicado().getDescuentoAplicadoId() : null);
+        dto.setDescuentoExternoId(usuarioDescuento.getDescuentosExternos() != null ? usuarioDescuento.getDescuentosExternos().getDescuentoExternoId() : null);
+
+        return dto;
     }
 
-    // Método para mapear de entidad a DTO
-    public UsuarioDescuentoDTO toDTO(UsuarioDescuento usuarioDescuento) {
-        UsuarioDescuentoDTO usuarioDescuentoDTO = new UsuarioDescuentoDTO();
-        usuarioDescuentoDTO.setUsuarioDescuentoId(usuarioDescuento.getUsuarioDescuentoId());
-        usuarioDescuentoDTO.setDescuentoAplicado(usuarioDescuento.getDescuentoAplicado());  // Mapeo del descuentoAplicado
-        return usuarioDescuentoDTO;
+    public static UsuarioDescuento toEntity(UsuarioDescuentoDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        UsuarioDescuento usuarioDescuento = new UsuarioDescuento();
+        // Aquí necesitarás setear las entidades 'Usuario', 'DescuentoAplicado' y 'DescuentoExterno' si es necesario
+        usuarioDescuento.setUsuarioDescuentoId(dto.getUsuarioDescuentoId());
+
+        return usuarioDescuento;
     }
 }

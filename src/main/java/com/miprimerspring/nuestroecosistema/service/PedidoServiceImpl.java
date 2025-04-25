@@ -2,6 +2,7 @@ package com.miprimerspring.nuestroecosistema.service;
 
 import com.miprimerspring.nuestroecosistema.dto.PedidoDTO;
 import com.miprimerspring.nuestroecosistema.mapper.PedidoMapper;
+import com.miprimerspring.nuestroecosistema.model.EstadoPedido;
 import com.miprimerspring.nuestroecosistema.model.Pedido;
 import com.miprimerspring.nuestroecosistema.repository.PedidoRepository;
 import jakarta.transaction.Transactional;
@@ -52,8 +53,9 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Override
     public List<PedidoDTO> obtenerPedidosPorEstado(String estado) {
-        List<Pedido> pedidos = pedidoRepository.buscarPorEstado(estado);
-        return pedidoMapper.toDTO(pedidos); // Mapea la lista de pedidos a DTOs
+        EstadoPedido estadoEnum = EstadoPedido.valueOf(estado.toUpperCase()); // Convierte string a enum
+        List<Pedido> pedidos = pedidoRepository.findByEstado(estadoEnum);
+        return pedidoMapper.toDTO(pedidos);
     }
 
     @Override

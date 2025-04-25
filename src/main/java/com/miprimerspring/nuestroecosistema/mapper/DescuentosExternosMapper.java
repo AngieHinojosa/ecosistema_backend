@@ -7,41 +7,33 @@ import org.springframework.stereotype.Component;
 @Component
 public class DescuentosExternosMapper {
 
-    public DescuentoExternoDTO toDTO(DescuentosExternos entity) {
-        if (entity == null) {
+    public static DescuentoExternoDTO toDTO(DescuentosExternos descuentoExterno) {
+        if (descuentoExterno == null) {
             return null;
         }
 
         DescuentoExternoDTO dto = new DescuentoExternoDTO();
-        dto.setDescuentoId(Long.valueOf(entity.getDescuentoId()));
-        dto.setEmpresaNombre(entity.getEmpresaNombre());
-        dto.setDescuentoPorcentaje(entity.getDescuentoPorcentaje());
-        dto.setDescuentoCodigo(entity.getDescuentoCodigo());
-        dto.setDescuentoVigenciaInicio(entity.getDescuentoVigenciaInicio());
-        dto.setDescuentoVigenciaFin(entity.getDescuentoVigenciaFin());
-        dto.setDescuentoMetodoPago(entity.getDescuentoMetodoPago());
-        dto.setDescuentoBanco(entity.getDescuentoBanco());
-        dto.setDescuentoActivo(entity.getDescuentoActivo());
+        dto.setDescuentoExternoId(descuentoExterno.getDescuentoExternoId());
+        dto.setEmpresa(descuentoExterno.getEmpresa());
+        dto.setDescripcion(descuentoExterno.getDescripcion());
+        dto.setPorcentajeDescuento(descuentoExterno.getPorcentajeDescuento());
+        dto.setCodigoDescuento(descuentoExterno.getCodigoDescuento());
 
         return dto;
     }
 
-    public DescuentosExternos toEntity(DescuentoExternoDTO dto) {
+    public static DescuentosExternos toEntity(DescuentoExternoDTO dto) {
         if (dto == null) {
             return null;
         }
 
-        DescuentosExternos entity = new DescuentosExternos();
-        entity.setDescuentoId(Math.toIntExact(dto.getDescuentoId()));
-        entity.setEmpresaNombre(dto.getEmpresaNombre());
-        entity.setDescuentoPorcentaje(dto.getDescuentoPorcentaje());
-        entity.setDescuentoCodigo(dto.getDescuentoCodigo());
-        entity.setDescuentoVigenciaInicio(dto.getDescuentoVigenciaInicio());
-        entity.setDescuentoVigenciaFin(dto.getDescuentoVigenciaFin());
-        entity.setDescuentoMetodoPago(dto.getDescuentoMetodoPago());
-        entity.setDescuentoBanco(dto.getDescuentoBanco());
-        entity.setDescuentoActivo(dto.getDescuentoActivo());
+        DescuentosExternos descuento = new DescuentosExternos();
+        descuento.setDescuentoExternoId(dto.getDescuentoExternoId());
+        descuento.setEmpresa(dto.getEmpresa());
+        descuento.setDescripcion(dto.getDescripcion());
+        descuento.setPorcentajeDescuento(dto.getPorcentajeDescuento());
+        descuento.setCodigoDescuento(dto.getCodigoDescuento());
 
-        return entity;
+        return descuento;
     }
 }

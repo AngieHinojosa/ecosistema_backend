@@ -21,12 +21,6 @@ public class CuentaBancariaRestController {
         this.cuentaBancariaService = cuentaBancariaService;
     }
 
-    @PostMapping("/nueva")
-    public ResponseEntity<CuentaBancariaDTO> crearCuentaBancaria(@RequestBody CuentaBancariaDTO cuentaBancariaDTO) {
-        CuentaBancariaDTO createdCuentaBancaria = cuentaBancariaService.crearCuentaBancaria(cuentaBancariaDTO);
-        return new ResponseEntity<>(createdCuentaBancaria, HttpStatus.CREATED);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<CuentaBancariaDTO> obtenerCuentaBancaria(@PathVariable Long id) {
         CuentaBancariaDTO cuentaBancariaDTO = cuentaBancariaService.obtenerCuentaBancariaPorId(id);
@@ -35,7 +29,7 @@ public class CuentaBancariaRestController {
 
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<List<CuentaBancariaDTO>> obtenerCuentasPorUsuario(@PathVariable Integer usuarioId) {
-        List<CuentaBancariaDTO> cuentas = cuentaBancariaService.obtenerCuentasPorUsuario(usuarioId);
+        List<CuentaBancariaDTO> cuentas = cuentaBancariaService.obtenerCuentasPorUsuario(Long.valueOf(usuarioId));
         return new ResponseEntity<>(cuentas, HttpStatus.OK);
     }
 

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface TransaccionService {
 
-    TransaccionDTO crearTransaccion(TransaccionDTO transaccionDTO);
+    TransaccionDTO crearTransaccion(TransaccionDTO transaccionDTO) throws Exception;
     TransaccionDTO obtenerTransaccionPorId(Long id);
     List<TransaccionDTO> obtenerTransaccionesPorCuentaId(Integer cuentaId);
     List<TransaccionDTO> obtenerTransaccionesPorOrigenId(Integer origenId);

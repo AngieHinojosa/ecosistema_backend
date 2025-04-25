@@ -7,7 +7,6 @@ public class DireccionDTO {
 
     private Long direccionId;
     private Long usuarioId;  // Almacena solo el ID del usuario
-    private String direccionTipo;
     private String direccionCalle;
     private String direccionNumero;
     private String direccionComuna;
@@ -15,6 +14,4 @@ public class DireccionDTO {
     private String direccionRegion;
     private String direccionCodigoPostal;
     private String direccionPais;
-    private Boolean direccionActiva;
-    private java.sql.Timestamp direccionFechaCreacion;
 }

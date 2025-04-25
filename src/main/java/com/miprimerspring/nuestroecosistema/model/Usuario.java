@@ -2,19 +2,16 @@ package com.miprimerspring.nuestroecosistema.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
-import javax.validation.constraints.NotNull;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Entity
-@Builder
 @Table(name = "usuarios")
 public class Usuario {
 
@@ -24,36 +21,32 @@ public class Usuario {
     private Long usuarioId;
 
     @Column(name = "usuario_uuid", length = 36, columnDefinition = "CHAR(36) DEFAULT (uuid())")
-    private String usuarioUuid = UUID.randomUUID().toString(); // Generar UUID por defecto
+    private String usuarioUuid = UUID.randomUUID().toString();
 
-    @Column(name = "usuario_nombres", length = 100, nullable = false)
+    @Column(name = "usuario_nombres", length = 100)
     private String usuarioNombres;
 
-    @NotNull
-    @Column(name = "usuario_apellidos", length = 100, nullable = false)
+    @Column(name = "usuario_apellidos", length = 100)
     private String usuarioApellidos;
 
-    @Column(name = "usuario_correo", length = 150, nullable = false, unique = true)
+    @Column(name = "usuario_correo", length = 150, unique = true)
     private String usuarioCorreo;
 
-    @Column(name = "usuario_telefono", length = 255, nullable = true)
+    @Column(name = "usuario_telefono", length = 255)
     private String usuarioTelefono;
 
     @Column(name = "usuario_contrasena", columnDefinition = "TEXT")
     private String usuarioContrasena;
 
     @Column(name = "usuario_fecha_registro", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp usuarioFechaRegistro = new Timestamp(System.currentTimeMillis());  // Asignar la fecha de registro actual
+    private Timestamp usuarioFechaRegistro = new Timestamp(System.currentTimeMillis());
 
-    @Column(name = "usuario_estado", length = 20, nullable = false)
-    private String usuarioEstado = "activo"; // Valor por defecto
-
-    @Column(name = "usuario_vendedor")
-    private Boolean usuarioVendedor = false; // Valor por defecto
+    @Column(name = "usuario_estado", length = 20)
+    private String usuarioEstado = "activo";
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "usuario_id"))
-    @Enumerated(EnumType.STRING)  // Guardamos los roles como STRING en la base de datos
+    @Enumerated(EnumType.STRING)
     @Column(name = "rol")
     private Set<ERol> roles = new HashSet<>();
 
@@ -69,7 +62,10 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
     private Set<Tarjeta> tarjetas;
 
-    // Constructor para establecer valores por defecto si no se especifican
+    // Nuevo campo para marcar si el usuario es vendedor
+    @Column(name = "usuario_vendedor")
+    private Boolean usuarioVendedor = false;
+
     @PrePersist
     public void prePersist() {
         if (this.usuarioUuid == null) {
@@ -79,4 +75,11 @@ public class Usuario {
             this.usuarioFechaRegistro = new Timestamp(System.currentTimeMillis());
         }
     }
+
+    public Usuario(Long usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CuentaBancaria> cuentasBancarias = new ArrayList<>();
 }

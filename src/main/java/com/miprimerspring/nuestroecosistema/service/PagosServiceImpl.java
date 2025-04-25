@@ -1,6 +1,7 @@
 package com.miprimerspring.nuestroecosistema.service;
 
 import com.miprimerspring.nuestroecosistema.dto.PagoDTO;
+import com.miprimerspring.nuestroecosistema.exception.PagoNotFoundException;
 import com.miprimerspring.nuestroecosistema.mapper.PagoMapper;
 import com.miprimerspring.nuestroecosistema.model.Pago;
 import com.miprimerspring.nuestroecosistema.repository.PagoRepository;
@@ -34,9 +35,9 @@ public class PagosServiceImpl implements PagosService {
 
     @Override
     public PagoDTO obtenerPagoPorId(Long id) {
-        Pago pago = pagoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pago no encontrado"));
-        return pagoMapper.toDTO(pago);
+        return pagoRepository.findById(id)
+                .map(pago -> pagoMapper.toDTO(pago))  // Aquí se usa la instancia de pagoMapper
+                .orElseThrow(() -> new PagoNotFoundException(id));  // Lanza la excepción personalizada si no se encuentra el pago
     }
 
     @Override
@@ -74,9 +75,9 @@ public class PagosServiceImpl implements PagosService {
     @Override
     public PagoDTO actualizarPago(Long id, PagoDTO pagoDTO) {
         Pago pagoExistente = pagoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pago no encontrado"));
+                .orElseThrow(() -> new PagoNotFoundException(id));  // Lanzar excepción si el pago no existe
         pagoExistente = pagoMapper.toEntity(pagoDTO);
-        pagoExistente.setPagoId(id);  // Mantener el ID
+        pagoExistente.setPagoId(id);  // Asegurarse de que el ID no se sobrescriba
         Pago updatedPago = pagoRepository.save(pagoExistente);
         return pagoMapper.toDTO(updatedPago);
     }
@@ -84,7 +85,7 @@ public class PagosServiceImpl implements PagosService {
     @Override
     public void eliminarPago(Long id) {
         Pago pago = pagoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pago no encontrado"));
+                .orElseThrow(() -> new PagoNotFoundException(id));  // Lanzar excepción si el pago no existe
         pagoRepository.delete(pago);
     }
 }

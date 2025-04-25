@@ -3,14 +3,13 @@ package com.miprimerspring.nuestroecosistema.mapper;
 import com.miprimerspring.nuestroecosistema.dto.ProductoDTO;
 import com.miprimerspring.nuestroecosistema.model.Categoria;
 import com.miprimerspring.nuestroecosistema.model.Producto;
-import com.miprimerspring.nuestroecosistema.model.Vendedor;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import com.miprimerspring.nuestroecosistema.model.Usuario;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ProductoMapper {
 
+    // Convertir Producto a ProductoDTO
     public ProductoDTO toDTO(Producto entity) {
         if (entity == null) {
             return null;
@@ -18,18 +17,19 @@ public class ProductoMapper {
 
         ProductoDTO dto = new ProductoDTO();
         dto.setProductoId(entity.getProductoId());
-        dto.setVendedorId(entity.getVendedor() != null ? entity.getVendedor().getVendedorId() : null);
+
+        // Cambié Vendedor por Usuario
+        dto.setUsuarioId(entity.getUsuario() != null ? entity.getUsuario().getUsuarioId() : null);  // Usa usuarioId
         dto.setCategoriaId(entity.getCategoria() != null ? entity.getCategoria().getCategoriaId() : null);
         dto.setProductoNombre(entity.getProductoNombre());
         dto.setProductoDescripcion(entity.getProductoDescripcion());
         dto.setProductoPrecio(entity.getProductoPrecio());
         dto.setProductoStock(entity.getProductoStock());
-        dto.setProductoEstado(entity.getProductoEstado());
-        dto.setProductoCreadoEn(entity.getProductoCreadoEn());
 
         return dto;
     }
 
+    // Convertir ProductoDTO a Producto
     public Producto toEntity(ProductoDTO dto) {
         if (dto == null) {
             return null;
@@ -38,9 +38,10 @@ public class ProductoMapper {
         Producto entity = new Producto();
         entity.setProductoId(dto.getProductoId());
 
-        Vendedor vendedor = new Vendedor();
-        vendedor.setVendedorId(dto.getVendedorId());
-        entity.setVendedor(vendedor);
+        // Cambié Vendedor por Usuario
+        Usuario usuario = new Usuario();
+        usuario.setUsuarioId(dto.getUsuarioId()); // Ahora usamos usuarioId en lugar de vendedorId
+        entity.setUsuario(usuario); // Asignamos el Usuario al Producto
 
         Categoria categoria = new Categoria();
         categoria.setCategoriaId(dto.getCategoriaId());
@@ -50,8 +51,6 @@ public class ProductoMapper {
         entity.setProductoDescripcion(dto.getProductoDescripcion());
         entity.setProductoPrecio(dto.getProductoPrecio());
         entity.setProductoStock(dto.getProductoStock());
-        entity.setProductoEstado(dto.getProductoEstado());
-        entity.setProductoCreadoEn(dto.getProductoCreadoEn());
 
         return entity;
     }

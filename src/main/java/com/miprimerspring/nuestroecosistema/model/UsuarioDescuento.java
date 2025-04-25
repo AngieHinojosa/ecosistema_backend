@@ -3,11 +3,15 @@ package com.miprimerspring.nuestroecosistema.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "usuarios_descuentos")
+@Table(name = "usuarios_descuentos", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"usuario_id", "descuento_id"})
+})
 public class UsuarioDescuento {
 
     @Id
@@ -15,14 +19,15 @@ public class UsuarioDescuento {
     @Column(name = "usuario_descuento_id")
     private Long usuarioDescuentoId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "descuento_id", nullable = false)
-    private DescuentosExternos descuento;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "descuento_aplicado_id")
+    private DescuentoAplicado descuentoAplicado;
 
-    @Column(name = "descuento_aplicado", nullable = false)
-    private Boolean descuentoAplicado;  // Añadido el campo descuentoAplicado
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "descuento_externo_id")
+    private DescuentosExternos descuentosExternos;
 }
