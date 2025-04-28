@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -290,21 +291,19 @@ public class CarritoServiceImpl implements CarritoService {
     }
 
     private void generarPuntosFidelizacion(Usuario usuario, BigDecimal monto) {
-        // 1. Obtener puntos de fidelización previos
         Optional<PuntosFidelizacion> puntosOptional = puntosFidelizacionRepository.findById(usuario.getUsuarioId());
         PuntosFidelizacion puntos = puntosOptional.orElseGet(() -> {
-            PuntosFidelizacion nuevoPunto = new PuntosFidelizacion();
-            nuevoPunto.setUsuario(usuario);
-            nuevoPunto.setPuntosAcumulados(0);
-            return nuevoPunto;
+            PuntosFidelizacion nuevo = new PuntosFidelizacion();
+            nuevo.setUsuario(usuario);
+            nuevo.setPuntosAcumulados(0);
+            return nuevo;
         });
 
-        // 2. Calcular los puntos (suponiendo 1 punto por cada 1000 CLP)
-        int puntosGenerados = monto.intValue() / 1000;
-        puntos.setPuntosAcumulados(puntos.getPuntosAcumulados() + puntosGenerados);
+        int puntosGanados = monto.divide(BigDecimal.valueOf(1000), RoundingMode.DOWN).intValue();
+        puntos.setPuntosAcumulados(puntos.getPuntosAcumulados() + puntosGanados);
 
-        // 3. Guardar los puntos acumulados
         puntosFidelizacionRepository.save(puntos);
     }
+
 }
 
