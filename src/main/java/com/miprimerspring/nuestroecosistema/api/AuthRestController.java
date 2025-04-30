@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +39,7 @@ public class AuthRestController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
-    // Endpoint para el login
+    // Login
     @Operation(summary = "Inicia sesión con un usuario existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Inicio de sesión exitoso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = JwtResponse.class))),
@@ -59,8 +60,7 @@ public class AuthRestController {
         return ResponseEntity.ok(new JwtResponse(jwtToken, userDetails.getUsername()));
     }
 
-
-    // Endpoint para el registro de usuarios
+    // Registro
     @Operation(summary = "Registra un nuevo usuario en el sistema")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Registro exitoso del usuario", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Usuario.class))),
@@ -94,11 +94,30 @@ public class AuthRestController {
         return new ResponseEntity<>(usuarioGuardado, HttpStatus.CREATED);
     }
 
+    // Obtener datos del usuario autenticado
+    @Operation(summary = "Obtener información del usuario autenticado")
+    @GetMapping("/me")
+    public ResponseEntity<?> getAuthenticatedUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(new UserInfoResponse(
+                userDetails.getUsuarioId(),
+                userDetails.getUsuarioCorreo(),
+                userDetails.getRoles()
+        ));
+    }
 
+    // Clases de respuesta
     @Data
     @AllArgsConstructor
     public static class JwtResponse {
         private String token;
         private String email;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class UserInfoResponse {
+        private Long id;
+        private String email;
+        private Object roles;
     }
 }
