@@ -32,6 +32,7 @@ public class CuentaBancariaRestController {
             @ApiResponse(responseCode = "200", description = "Cuenta bancaria encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CuentaBancariaDTO.class))),
             @ApiResponse(responseCode = "404", description = "Cuenta bancaria no encontrada")
     })
+    @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
     @GetMapping("/{id}")
     public ResponseEntity<CuentaBancariaDTO> obtenerCuentaBancaria(@PathVariable Long id) {
         CuentaBancariaDTO cuentaBancariaDTO = cuentaBancariaService.obtenerCuentaBancariaPorId(id);

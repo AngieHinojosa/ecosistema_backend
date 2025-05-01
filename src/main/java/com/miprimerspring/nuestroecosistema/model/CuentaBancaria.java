@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +21,7 @@ public class CuentaBancaria {
     @Column(name = "cuenta_id")
     private Long cuentaId;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;

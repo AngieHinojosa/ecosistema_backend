@@ -1,5 +1,6 @@
 package com.miprimerspring.nuestroecosistema.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.sql.Date;
@@ -59,12 +60,15 @@ public class Usuario {
     @Column(name = "usuario_fecha_nacimiento")
     private Date usuarioFechaNacimiento;
 
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
-    private Set<Tarjeta> tarjetas;
-
-    // Nuevo campo para marcar si el usuario es vendedor
     @Column(name = "usuario_vendedor")
     private Boolean usuarioVendedor = false;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<CuentaBancaria> cuentasBancarias = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private Set<Tarjeta> tarjetas;
 
     @PrePersist
     public void prePersist() {
@@ -79,7 +83,4 @@ public class Usuario {
     public Usuario(Long usuarioId) {
         this.usuarioId = usuarioId;
     }
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CuentaBancaria> cuentasBancarias = new ArrayList<>();
 }

@@ -22,6 +22,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableMethodSecurity
 public class WebSecurityConfig {
@@ -62,22 +64,26 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.addAllowedOrigin("*");  // Permite todas las URLs de origen, puedes restringirlo a un dominio específico
-        corsConfig.addAllowedMethod("*");  // Permite todos los métodos HTTP
-        corsConfig.addAllowedHeader("*");  // Permite todos los encabezados
+
+        // Permitir orígenes específicos o cualquier origen (para desarrollo)
+        corsConfig.addAllowedOrigin("http://localhost:5173"); // o "*" para permitir todos
+        corsConfig.addAllowedMethod("*");  // Permite todos los métodos (GET, POST, PUT, DELETE, etc.)
+        corsConfig.addAllowedHeader("*");  // Permite todos los encabezados (Authorization, Content-Type, etc.)
+        corsConfig.setAllowCredentials(true);  // Permitir credenciales (como cookies o Authorization header)
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);  // Configura CORS para todas las rutas
+        source.registerCorsConfiguration("/**", corsConfig);  // Aplica CORS a todas las rutas
 
         return source;
     }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .exceptionHandling(e -> e.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                .cors(withDefaults())
                 // Configuración de las rutas públicas (Swagger y otras)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
