@@ -17,11 +17,11 @@ public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "producto_id")
-    @EqualsAndHashCode.Include // <- Este es el campo que se usará para comparar objetos Producto
+    @EqualsAndHashCode.Include
     private Long productoId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "usuario_id", nullable = false) // Relación con el usuario que lo publicó
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -39,6 +39,9 @@ public class Producto {
 
     @Column(name = "producto_stock")
     private Integer productoStock;
+
+    @Column(name = "producto_img_url", length = 255)
+    private String imgUrl;
 
     @CreationTimestamp
     @Column(name = "producto_creado_en", updatable = false)

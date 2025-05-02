@@ -16,7 +16,7 @@ public class ProductoMapper {
         }
 
         ProductoDTO dto = new ProductoDTO();
-        dto.setProductoId(entity.getProductoId());
+
 
         // Cambié Vendedor por Usuario
         dto.setUsuarioId(entity.getUsuario() != null ? entity.getUsuario().getUsuarioId() : null);  // Usa usuarioId
@@ -25,6 +25,7 @@ public class ProductoMapper {
         dto.setProductoDescripcion(entity.getProductoDescripcion());
         dto.setProductoPrecio(entity.getProductoPrecio());
         dto.setProductoStock(entity.getProductoStock());
+        dto.setImgUrl(entity.getImgUrl());
 
         return dto;
     }
@@ -36,7 +37,7 @@ public class ProductoMapper {
         }
 
         Producto entity = new Producto();
-        entity.setProductoId(dto.getProductoId());
+
 
         // Cambié Vendedor por Usuario
         Usuario usuario = new Usuario();
@@ -51,6 +52,7 @@ public class ProductoMapper {
         entity.setProductoDescripcion(dto.getProductoDescripcion());
         entity.setProductoPrecio(dto.getProductoPrecio());
         entity.setProductoStock(dto.getProductoStock());
+        entity.setImgUrl(dto.getImgUrl());
 
         return entity;
     }

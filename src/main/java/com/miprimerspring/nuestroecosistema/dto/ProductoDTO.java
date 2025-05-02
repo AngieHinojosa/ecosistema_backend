@@ -7,11 +7,12 @@ import java.sql.Timestamp;
 @Data
 public class ProductoDTO {
 
-    private Long productoId;
+
     private Long usuarioId;
     private Long categoriaId;
     private String productoNombre;
     private String productoDescripcion;
     private Double productoPrecio;
     private Integer productoStock;
+    private String imgUrl;
 }

@@ -104,6 +104,9 @@ public class WebSecurityConfig {
 
                         // Rutas protegidas por roles
                         // Producto
+
+
+                        .requestMatchers("/producto/todos").permitAll()
                         .requestMatchers("/producto/nuevo").hasAnyRole("VENDEDOR", "ADMIN") // Vendedores y Admin pueden crear productos
                         .requestMatchers("/producto/lista").hasAnyRole("USER", "ADMIN", "VENDEDOR") // Todos pueden ver productos
                         .requestMatchers("/producto/{id}").hasAnyRole("USER", "ADMIN", "VENDEDOR") // Todos pueden obtener productos por ID

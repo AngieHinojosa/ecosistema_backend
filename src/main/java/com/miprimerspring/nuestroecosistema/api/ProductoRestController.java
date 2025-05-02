@@ -39,7 +39,7 @@ public class ProductoRestController {
     public ResponseEntity<ProductoDTO> crearProducto(@RequestBody ProductoDTO productoDTO) {
         // Obtener los detalles del usuario autenticado
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
+        System.out.println("IMG URL recibido: " + productoDTO.getImgUrl());
         if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             Long usuarioId = userDetails.getUsuarioId();  // Obtenemos el usuarioId desde UserDetailsImpl
